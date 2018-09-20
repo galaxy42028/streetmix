@@ -47,7 +47,7 @@ export function setLastStreet (value) {
   _lastStreet = value
 }
 
-const LATEST_SCHEMA_VERSION = 18
+const LATEST_SCHEMA_VERSION = 19
 // 1: starting point
 // 2: adding leftBuildingHeight and rightBuildingHeight
 // 3: adding leftBuildingVariant and rightBuildingVariant
@@ -66,6 +66,7 @@ const LATEST_SCHEMA_VERSION = 18
 // 16: stop saving undo stack
 // 17: alternative colors for bike lanes
 // 18: change lat/lng format from array to object
+// 19: bike lane elevation
 
 function incrementSchemaVersion (street) {
   let segment, variant
@@ -239,6 +240,16 @@ function incrementSchemaVersion (street) {
         street.location.latlng = {
           lat: street.location.latlng[0],
           lng: street.location.latlng[1]
+        }
+      }
+      break
+    case 18:
+      for (let i in street.segments) {
+        segment = street.segments[i]
+        if (segment.type === 'bike-lane') {
+          variant = getVariantArray(segment.type, segment.variantString)
+          variant['bike-lane-elevation'] = 'road'
+          segment.variantString = getVariantString(variant)
         }
       }
       break

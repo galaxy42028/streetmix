@@ -279,6 +279,20 @@ export const VARIANT_ICONS = {
       'title': 'Perpendicular parking, road level'
     }
   },
+  'bike-lane-elevation': {
+    'road': {
+      'id': 'elevation-lower',
+      'title': 'Street level'
+    },
+    'raised': {
+      'id': 'elevation-higher',
+      'title': 'Raised bike lane'
+    },
+    'sidewalk': {
+      'id': 'elevation-higher',
+      'title': 'Sidewalk level'
+    }
+  },
   'car-type': {
     'car': {
       'id': 'car',
