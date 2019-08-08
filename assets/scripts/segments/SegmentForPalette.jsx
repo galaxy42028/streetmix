@@ -9,12 +9,13 @@ import { Types, paletteSegmentSource, collectDragSource } from './drag_and_drop'
 import { getSegmentVariantInfo, getSegmentInfo } from './info'
 import { getVariantInfoDimensions } from './view'
 import { generateRandSeed } from '../util/random'
+import './SegmentForPalette.scss'
 
 const PALETTE_SEGMENT_EXTRA_PADDING = 6
-const PALETTE_SEGMENT_Y_OFFSET = 20
+const PALETTE_GROUND_BASELINE = 65
 const PALETTE_SEGMENT_MULTIPLIER = 1 / 3
 
-class SegmentForPalette extends React.Component {
+export class SegmentForPalette extends React.Component {
   static propTypes = {
     // Provided by react-intl
     intl: intlShape.isRequired,
@@ -74,7 +75,6 @@ class SegmentForPalette extends React.Component {
         style={{ width: (actualWidth * TILE_SIZE * PALETTE_SEGMENT_MULTIPLIER) + 'px' }}
         className="segment segment-in-palette"
         onPointerOver={this.handlePointerOver}
-        onPointerOut={this.handlePointerOut}
       >
         <SegmentCanvas
           actualWidth={actualWidth}
@@ -82,7 +82,7 @@ class SegmentForPalette extends React.Component {
           variantString={this.props.variantString}
           randSeed={generateRandSeed()}
           multiplier={PALETTE_SEGMENT_MULTIPLIER}
-          offsetTop={PALETTE_SEGMENT_Y_OFFSET}
+          groundBaseline={PALETTE_GROUND_BASELINE}
         />
       </div>
     )

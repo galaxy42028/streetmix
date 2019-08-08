@@ -7,6 +7,7 @@ import { hideStatusMessage } from '../app/status_message'
 import { app } from '../preinit/app_settings'
 import { hideControls } from '../segments/resizing'
 import { updateToLatestSchemaVersion } from '../streets/data_model'
+import { saveStreetThumbnail, SAVE_THUMBNAIL_EVENTS } from '../streets/image'
 import { fetchGalleryData } from './fetch_data'
 import { fetchGalleryStreet } from './fetch_street'
 
@@ -59,7 +60,7 @@ export function showGallery (userId, instant = false) {
   updatePageUrl(true)
 }
 
-export function hideGallery (instant) {
+export function hideGallery (instant = false) {
   // Do not hide the gallery if there is no street selected.
   if (galleryState.noStreetSelected === true) {
     return
@@ -120,6 +121,9 @@ export function repeatReceiveGalleryData () {
 }
 
 export function switchGalleryStreet (id) {
+  // Save previous street's thumbnail before switching streets.
+  saveStreetThumbnail(store.getState().street, SAVE_THUMBNAIL_EVENTS.PREVIOUS_STREET)
+
   galleryState.noStreetSelected = false
 
   fetchGalleryStreet(id)

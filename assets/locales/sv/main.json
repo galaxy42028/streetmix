@@ -15,14 +15,16 @@
     },
     "help": {
       "keyboard-label": "Snabbkommandon:",
-      "remove": "Ta bort ett segment du pekar på<br />(håll inne <kbd class='key'>Shift</kbd> för att ta bort alla)",
-      "move": "",
-      "change": ""
+      "remove-instruction": "Ta bort ett segment du pekar på",
+      "remove-shift-instruction": "(håll inne {shiftKey} för att ta bort alla)",
+      "move-instruction": "",
+      "move-shift-instruction": "",
+      "change-instruction": "",
+      "change-shift-instruction": ""
     },
     "share": {
       "sign-in-twitter-link": "Logga in",
       "sign-in-link": "{signInLink} för bättre koppling till ditt personliga gatubibliotek",
-      "sign-in": "",
       "link": "Kopiera och klistra in denna länk för att dela:",
       "twitter": "Dela på Twitter",
       "facebook": "Dela på Facebook",
@@ -44,7 +46,10 @@
       "email": "Skicka e-post till Streetmix-teamet",
       "github": "Visa källkod på GitHub",
       "blog": "Besök Streetmix-bloggen",
-      "slack": "Gå med i Slack-chatten"
+      "discord": "",
+      "slack": "Gå med i Slack-chatten",
+      "minecraft": "",
+      "newsletter": ""
     },
     "contribute": {
       "donate": "",
@@ -131,7 +136,8 @@
     "copy": "Gör en kopia",
     "remove": "Ta bort",
     "close": "",
-    "dismiss": ""
+    "dismiss": "",
+    "okay": ""
   },
   "dialogs": {
     "error": {
@@ -169,6 +175,8 @@
       "sponsored-by": "",
       "donate-link": "",
       "github-link": "",
+      "open-source-link": "",
+      "guidebook-link": "",
       "tos-link": "",
       "privacy-link": ""
     },
@@ -177,9 +185,10 @@
       "option-labels": "Segmentnamn och -bredder",
       "option-name": "Gatunamn",
       "option-sky": "Transparent himmel",
+      "option-watermark": "",
       "loading": "Laddar…",
       "save-button": "Sparar till din dator…",
-      "license": "Denna av Streetmix skapade bild kan användas var som helst, oavsett syfte, i enlighet med <br><a href='{url}'>Creative Commons Attribution-ShareAlike 4.0 International License</a>.",
+      "license": "Denna av Streetmix skapade bild kan användas var som helst, oavsett syfte, i enlighet med {licenseLink}.",
       "error-preview": "",
       "error-unavailable": "",
       "preview-image-alt": ""
@@ -192,7 +201,8 @@
       "add-location": "",
       "confirm-location": "",
       "clear-location": "",
-      "unknown-location": ""
+      "unknown-location": "",
+      "geotag-unavailable": ""
     },
     "donate": {
       "heading": "",
@@ -206,6 +216,7 @@
       "description": "",
       "email-label": "",
       "email-description": "",
+      "email-invalid": "",
       "social-heading": "",
       "button": {
         "email": "",
@@ -215,16 +226,24 @@
       },
       "tos": "",
       "tos-link-label": "",
-      "privacy-link-label": ""
+      "privacy-link-label": "",
+      "loading-message": "",
+      "sent-message-with-email": "",
+      "email-unreceived": "",
+      "resend-email": ""
     },
     "whatsnew": {
+      "heading": ""
+    },
+    "newsletter": {
       "heading": ""
     }
   },
   "prompt": {
     "new-street": "Nytt gatunamn:",
     "delete-street": "",
-    "new-width": ""
+    "new-width": "",
+    "segment-label": ""
   },
   "toast": {
     "segment-deleted": "Segmentet har tagits bort.",
@@ -272,7 +291,11 @@
     "increase-width": "Öka bredd (håll inne Shift för ökad precision)",
     "decrease-width": "Minska bredd (håll inne Shift för ökad precision)",
     "add-floor": "Lägg till våning",
-    "remove-floor": "Ta bort våning"
+    "remove-floor": "Ta bort våning",
+    "scroll-street-left": "",
+    "scroll-street-right": "",
+    "scroll-left": "",
+    "scroll-right": ""
   },
   "street": {
     "default-name": "Namnlös gata",
@@ -316,9 +339,22 @@
     "anonymous": "Anonym",
     "byline": ""
   },
+  "export": {
+    "watermark": ""
+  },
   "meta": {
     "description": "Designa, ändra och dela din gata - allt i din webbläsare! Lägg till träd eller cykelbanor. Bredda gångbanor eller körbanor. Lär hur allt detta kan påverka ditt närområde.",
     "page-title": ""
+  },
+  "credits": {
+    "core-team-heading": "",
+    "past-team-heading": "",
+    "advisors": "",
+    "additional-illustrations": "",
+    "additional-code": "",
+    "additional-contributors": "",
+    "special-thanks": "",
+    "translators": ""
   },
   "i18n": {
     "lang": {
@@ -334,6 +370,7 @@
       "pt-br": "Portugisiska (Brasilien)",
       "ru": "",
       "sv": "Svenska",
+      "zh": "",
       "zh-hans": "",
       "zh-hant": ""
     }

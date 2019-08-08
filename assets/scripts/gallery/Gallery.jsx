@@ -12,14 +12,17 @@ import Scrollable from '../ui/Scrollable'
 import Avatar from '../users/Avatar'
 import GalleryStreetItem from './GalleryStreetItem'
 import { switchGalleryStreet, repeatReceiveGalleryData, hideGallery } from './view'
+import { registerKeypress, deregisterKeypress } from '../app/keypress'
 import { sendDeleteStreetToServer } from '../streets/xhr'
 import { showError, ERRORS } from '../app/errors'
-import { URL_NEW_STREET, URL_NEW_STREET_COPY_LAST } from '../app/routing'
+import { URL_NEW_STREET, URL_NEW_STREET_COPY_LAST } from '../app/constants'
 import { setGalleryMode, deleteGalleryStreet } from '../store/actions/gallery'
 import { showDialog } from '../store/actions/dialogs'
+import './Gallery.scss'
 
 class Gallery extends React.Component {
   static propTypes = {
+    visible: PropTypes.bool,
     setGalleryMode: PropTypes.func,
     deleteGalleryStreet: PropTypes.func,
     showDialog: PropTypes.func,
@@ -45,14 +48,26 @@ class Gallery extends React.Component {
 
   componentDidMount () {
     this.scrollSelectedStreetIntoView()
+
+    registerKeypress('esc', this.hideGallery)
   }
 
   componentDidUpdate () {
     this.scrollSelectedStreetIntoView()
   }
 
+  componentWillUnmount () {
+    deregisterKeypress('esc', this.hideGallery)
+  }
+
   componentDidCatch () {
     this.props.setGalleryMode('ERROR')
+  }
+
+  hideGallery = (event) => {
+    if (this.props.visible) {
+      hideGallery()
+    }
   }
 
   selectStreet = (streetId) => {
@@ -108,7 +123,9 @@ class Gallery extends React.Component {
         break
       case 'LOADING':
         childElements = (
-          <div className="gallery-loading"><FormattedMessage id="msg.loading" defaultMessage="Loading…" /></div>
+          <div className="gallery-loading">
+            <FormattedMessage id="msg.loading" defaultMessage="Loading…" />
+          </div>
         )
         break
       case 'ERROR':
@@ -193,7 +210,7 @@ class Gallery extends React.Component {
             {streetCount}
             <div className={galleryClassName}>
               {buttons}
-              <Scrollable className="streets">
+              <Scrollable className="streets" allowKeyboardScroll>
                 {items}
               </Scrollable>
             </div>
@@ -221,12 +238,10 @@ function mapStateToProps (state) {
   }
 }
 
-function mapDispatchToProps (dispatch) {
-  return {
-    setGalleryMode: (mode) => { dispatch(setGalleryMode(mode)) },
-    deleteGalleryStreet: (streetId) => { dispatch(deleteGalleryStreet(streetId)) },
-    showDialog: (type) => { dispatch(showDialog(type)) }
-  }
+const mapDispatchToProps = {
+  setGalleryMode,
+  deleteGalleryStreet,
+  showDialog
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Gallery)

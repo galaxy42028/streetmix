@@ -1,11 +1,12 @@
 {
   "segments": {
     "sidewalk": "Sidewalk",
-    "sidewalk-tree": "Sidewalk with a tree",
+    "sidewalk-tree": "Sidewalk tree",
     "bike-rack": "Bike rack",
     "bench": "Bench",
+    "cafe-seating": "Cafe seating",
     "wayfinding-sign": "Wayfinding sign",
-    "sidewalk-lamp": "Sidewalk with a lamp",
+    "sidewalk-lamp": "Lamp",
     "parklet": "Parklet",
     "divider": "Buffer",
     "planting-strip": "Planting strip",
@@ -13,6 +14,8 @@
     "median": "Median",
     "bollard": "Bollard",
     "dome": "Traffic exclusion dome",
+    "scooter": "Electric scooter",
+    "scooter-drop-zone": "Scooter drop zone",
     "bike-lane": "Bike lane",
     "parking-lane": "Parking lane",
     "perpendicular-parking": "Perpendicular parking",
@@ -33,7 +36,8 @@
     "streetcar": "Streetcar",
     "light-rail": "Light rail",
     "transit-shelter": "Transit shelter",
-    "inception-train": "“Inception” train"
+    "inception-train": "“Inception” train",
+    "magic-carpet": "Magic carpet"
   },
   "descriptions": {
     "wayfinding-sign": {
@@ -157,6 +161,7 @@
     "car-type|car": "Car",
     "car-type|sharrow": "Sharrow",
     "car-type|truck": "Truck",
+    "car-type|av": "Autonomous vehicle",
     "public-transit-asphalt|regular": "Asphalt",
     "public-transit-asphalt|colored": "Red lane",
     "public-transit-asphalt|grass": "Grass",
@@ -196,6 +201,10 @@
     "waiting-area|sparse": "Someone",
     "waiting-area|empty": "No one",
     "flex-type|rideshare": "Rideshare",
-    "flex-type|taxi": "Taxi"
+    "flex-type|taxi": "Taxi",
+    "occupants|empty": "Empty",
+    "occupants|full": "Full",
+    "elevation|sidewalk": "Sidewalk level",
+    "elevation|road": "Street level"
   }
 }

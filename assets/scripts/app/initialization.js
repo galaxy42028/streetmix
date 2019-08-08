@@ -6,23 +6,24 @@ import { showGallery } from '../gallery/view'
 import { initializeFlagSubscribers } from '../app/flag_utils'
 import { segmentsChanged } from '../segments/view'
 import { initLocale } from '../locales/locale'
-import { onNewStreetLastClick } from '../streets/creation'
 import {
   setLastStreet,
-  trimStreetData,
   setIgnoreStreetChanges
 } from '../streets/data_model'
-import { updateStreetName } from '../streets/name'
-import { initStreetReduxTransitionSubscriber } from '../streets/street'
+import { initStreetNameChangeListener } from '../streets/name'
+import { initStreetThumbnailSubscriber } from '../streets/image'
+import { initStreetDataChangedListener } from '../streets/street'
+import { initEnvironsChangedListener } from '../streets/environs'
+import { initDragTypeSubscriber } from '../segments/drag_and_drop'
 import { getPromoteStreet, remixStreet } from '../streets/remix'
-import { resizeStreetWidth } from '../streets/width'
+import { fetchLastStreet } from '../streets/xhr'
 import { loadSignIn } from '../users/authentication'
 import { updateSettingsFromCountryCode } from '../users/localization'
 import { detectGeolocation } from '../users/geolocation'
 import { initPersistedSettingsStoreObserver } from '../users/settings'
 import { addEventListeners } from './event_listeners'
 import { getMode, setMode, MODES, processMode } from './mode'
-import { processUrl, updatePageUrl } from './page_url'
+import { processUrl } from './page_url'
 import { onResize } from './window_resize'
 import { startListening } from './keypress'
 import { registerKeypresses } from './keyboard_commands'
@@ -111,29 +112,28 @@ export function checkIfEverythingIsLoaded () {
 }
 
 function onEverythingLoaded () {
-  switch (getMode()) {
-    case MODES.NEW_STREET_COPY_LAST:
-      onNewStreetLastClick()
-      break
+  if (getMode() === MODES.NEW_STREET_COPY_LAST) {
+    fetchLastStreet()
   }
 
   onResize()
-  resizeStreetWidth()
-  updateStreetName(store.getState().street)
   segmentsChanged()
 
   setIgnoreStreetChanges(false)
-  setLastStreet(trimStreetData(store.getState().street))
-  initStreetReduxTransitionSubscriber()
+  setLastStreet()
+  initStreetDataChangedListener()
   initializeFlagSubscribers()
   initPersistedSettingsStoreObserver()
+  initStreetThumbnailSubscriber()
 
-  updatePageUrl()
+  initStreetNameChangeListener()
+  initEnvironsChangedListener()
+  initDragTypeSubscriber()
+
   addEventListeners()
+  showConsoleMessage()
 
   store.dispatch(everythingLoaded())
-  // TODO: Only the WelcomePanel needs this event; refactor it out.
-  window.dispatchEvent(new window.CustomEvent('stmx:everything_loaded'))
 
   if (debug.forceLiveUpdate) {
     scheduleNextLiveUpdateCheck()
@@ -213,6 +213,19 @@ function onEverythingLoaded () {
       store.dispatch(showDialog('DONATE'))
     }
   }
+}
+
+function showConsoleMessage () {
+  console.log(`%c
+          ____  _    %cWelcome to%c   _             _      _
+         / ___|| |_ _ __ ___  ___| |_ _ __ ___ (_)_  _| |
+         \\___ \\| __| '__/ _ \\/ _ \\ __| '_ \` _ \\| \\ \\/ / |
+          ___) | |_| | |  __/  __/ |_| | | | | | |>  <|_|
+         |____/ \\__|_|  \\___|\\___|\\__|_| |_| |_|_/_/\\_(_)
+%c..:  We’re looking for contributors!  https://github.com/streetmix/streetmix  :..
+%c..:  Support us financially at        https://opencollective.com/streetmix    :..`,
+  'color: green', 'color:gray', 'color: green', 'color: blue', 'color: red'
+  )
 }
 
 /**

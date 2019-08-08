@@ -15,14 +15,16 @@
     },
     "help": {
       "keyboard-label": "快捷鍵：",
-      "remove": "移除你現在所指的部分<br />（長按<kbd class='key'>Shift</kbd>來移除所有的部分）",
-      "move": "移動這個部分<br /> （長按<kbd class='key'>Shift</kbd>來跳到邊上）",
-      "change": "更改你現在所指部分<br />的寬度（長按<kbd class='key'>Shift</kbd>來微調）"
+      "remove-instruction": "移除你現在所指的部分",
+      "remove-shift-instruction": "（長按{shiftKey}來移除所有的部分）",
+      "move-instruction": "移動這個部分",
+      "move-shift-instruction": "（長按{shiftKey}來跳到邊上）",
+      "change-instruction": "更改你現在所指部分",
+      "change-shift-instruction": "的寬度（長按{shiftKey}來微調）"
     },
     "share": {
       "sign-in-twitter-link": "登錄",
       "sign-in-link": "{signInLink}你所創建的街道和個人街道圖集的鏈接",
-      "sign-in": "<a href='#'>登陸</a>之後獲取你的街道和個人街道圖集的鏈接",
       "link": "複製和粘貼這個鏈接來分享：",
       "twitter": "分享到推特",
       "facebook": "分享到臉書",
@@ -44,7 +46,10 @@
       "email": "給Streetmix團隊發郵件",
       "github": "在GitHub上查看源代碼",
       "blog": "訪問Streetmix的博客",
-      "slack": "加入Slack對話"
+      "discord": "",
+      "slack": "加入Slack對話",
+      "minecraft": "",
+      "newsletter": ""
     },
     "contribute": {
       "donate": "資助我們",
@@ -131,7 +136,8 @@
     "copy": "複製",
     "remove": "去掉",
     "close": "關閉",
-    "dismiss": "忽略"
+    "dismiss": "忽略",
+    "okay": ""
   },
   "dialogs": {
     "error": {
@@ -169,6 +175,8 @@
       "sponsored-by": "Streetmix 由以下組織及公司慷慨贊助：",
       "donate-link": "贊助我們",
       "github-link": "貢獻源代碼",
+      "open-source-link": "",
+      "guidebook-link": "",
       "tos-link": "",
       "privacy-link": ""
     },
@@ -177,9 +185,10 @@
       "option-labels": "各部分名稱與寬度",
       "option-name": "街道名稱",
       "option-sky": "無天空背景",
+      "option-watermark": "",
       "loading": "加載中…",
       "save-button": "保存到電腦上…",
-      "license": "根據<br><a href='{url}'>Creative Commons Attribution-ShareAlike 4.0 International License</a>條例，這張由Streetmix生成的圖片可以被用於任何位置，任何目的。",
+      "license": "根據{licenseLink}條例，這張由Streetmix生成的圖片可以被用於任何位置，任何目的。",
       "error-preview": "我們在顯示預覽圖時出現了故障。",
       "error-unavailable": "此瀏覽器不支持收藏圖片功能。",
       "preview-image-alt": "預覽"
@@ -192,7 +201,8 @@
       "add-location": "添加位置",
       "confirm-location": "確認位置",
       "clear-location": "清除位置",
-      "unknown-location": "未知位置"
+      "unknown-location": "未知位置",
+      "geotag-unavailable": ""
     },
     "donate": {
       "heading": "Streetmix 需要你的幫助！",
@@ -206,6 +216,7 @@
       "description": "",
       "email-label": "",
       "email-description": "",
+      "email-invalid": "",
       "social-heading": "",
       "button": {
         "email": "",
@@ -215,16 +226,24 @@
       },
       "tos": "",
       "tos-link-label": "",
-      "privacy-link-label": ""
+      "privacy-link-label": "",
+      "loading-message": "",
+      "sent-message-with-email": "",
+      "email-unreceived": "",
+      "resend-email": ""
     },
     "whatsnew": {
+      "heading": ""
+    },
+    "newsletter": {
       "heading": ""
     }
   },
   "prompt": {
     "new-street": "新的街道名稱",
     "delete-street": "你確定你要永久刪除{streetName}嗎？此操作將無法被撤銷。",
-    "new-width": "新街道的寬度（從{minWidth}到{maxWidth}）："
+    "new-width": "新街道的寬度（從{minWidth}到{maxWidth}）：",
+    "segment-label": ""
   },
   "toast": {
     "segment-deleted": "這個部分已被移除。",
@@ -257,7 +276,7 @@
   },
   "key": {
     "backspace": "退位鍵",
-    "shift": "Shift鍵",
+    "shift": "Shift",
     "plus": "",
     "minus": "",
     "left-arrow": "",
@@ -272,7 +291,11 @@
     "increase-width": "增加寬度（長按 Shift 來微調）",
     "decrease-width": "減少寬度（長按 Shift 來微調）",
     "add-floor": "增加樓層",
-    "remove-floor": "移除樓層"
+    "remove-floor": "移除樓層",
+    "scroll-street-left": "",
+    "scroll-street-right": "",
+    "scroll-left": "",
+    "scroll-right": ""
   },
   "street": {
     "default-name": "無名街",
@@ -316,9 +339,22 @@
     "anonymous": "匿名",
     "byline": "來自{user}"
   },
+  "export": {
+    "watermark": ""
+  },
   "meta": {
     "description": "重新設計并分享你所在社區的街道 —— 只需要一個網頁！你可以添加行道樹和自行車道，拓寬人行道或机动車道，并从中探索你的设计将如何影响你的社區。",
     "page-title": "{streetName} （來自{author}）"
+  },
+  "credits": {
+    "core-team-heading": "",
+    "past-team-heading": "",
+    "advisors": "",
+    "additional-illustrations": "",
+    "additional-code": "",
+    "additional-contributors": "",
+    "special-thanks": "",
+    "translators": ""
   },
   "i18n": {
     "lang": {
@@ -334,6 +370,7 @@
       "pt-br": "葡文 (巴西)",
       "ru": "俄文",
       "sv": "瑞典語",
+      "zh": "中文",
       "zh-hans": "簡體中文",
       "zh-hant": "繁體中文"
     }

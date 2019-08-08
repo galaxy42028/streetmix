@@ -8,8 +8,9 @@ import ContributeMenu from './ContributeMenu'
 import IdentityMenu from './IdentityMenu'
 import SettingsMenu from './SettingsMenu'
 import ShareMenu from './ShareMenu'
-import { registerKeypress } from '../app/keypress'
+import { registerKeypress, deregisterKeypress } from '../app/keypress'
 import { showMenu, clearMenus } from '../store/actions/menus'
+import './MenusContainer.scss'
 
 class MenusContainer extends React.PureComponent {
   static propTypes = {
@@ -26,7 +27,7 @@ class MenusContainer extends React.PureComponent {
     super(props)
 
     this.state = {
-      activeMenuPos: null
+      activeMenuItemNode: null
     }
   }
 
@@ -35,9 +36,9 @@ class MenusContainer extends React.PureComponent {
     // can be cleared from anywhere, so this handles changes in active menu state.
     // Clear active menu state only if props have changed from an active menu
     // state to a no-menu state, this prevents side effects from running needlessly.
-    if (prevState.activeMenuPos && !nextProps.activeMenu) {
+    if (prevState.activeMenuItemNode && !nextProps.activeMenu) {
       return {
-        activeMenuPos: null
+        activeMenuItemNode: null
       }
     }
 
@@ -46,11 +47,10 @@ class MenusContainer extends React.PureComponent {
 
   componentDidMount () {
     // Hide menus if page loses visibility.
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden === true) {
-        this.hideAllMenus()
-      }
-    }, false)
+    document.addEventListener('visibilitychange', this.handleVisibilityChange, false)
+
+    // Hide menus if a click occurs outside of a menu or menu button
+    document.addEventListener('pointerdown', this.onBodyMouseDown)
 
     // Set up keypress listener to hide menus if visible
     registerKeypress('esc', this.hideAllMenus)
@@ -63,6 +63,12 @@ class MenusContainer extends React.PureComponent {
     }
   }
 
+  componentWillUnmount () {
+    document.removeEventListener('visibilitychange', this.handleVisibilityChange, false)
+    document.removeEventListener('pointerdown', this.onBodyMouseDown)
+    deregisterKeypress('esc', this.hideAllMenus)
+  }
+
   componentDidCatch (error) {
     console.log(error)
   }
@@ -70,19 +76,35 @@ class MenusContainer extends React.PureComponent {
   /**
    * Callback function passed to the MenuBar component.
    * Clicked buttons that have a menu component will report back to this component
-   * what was clicked and where it should be placed, which is then passed to
+   * what was clicked and a reference to that element, which is then passed to
    * individual menus.
    *
    * @param {string} menu - name of the menu that was clicked
-   * @param {Object} position - value of getBoundingClientRect for menu button
+   * @param {HTMLElement} node - reference to the menu item button, used to position menu
    */
-  onMenuDropdownClick = (menu, position) => {
+  onMenuDropdownClick = (menu, node) => {
     // If the clicked menu is already active, it's toggled off.
     const activeMenu = (this.props.activeMenu === menu) ? null : menu
     this.setState({
-      activeMenuPos: activeMenu ? position : null
+      activeMenuItemNode: activeMenu ? node : null
     })
     this.props.showMenu(activeMenu)
+  }
+
+  /**
+   * This event handler callback will close menus if a click occurs outside
+   * of a menu or a menu button.
+   */
+  onBodyMouseDown = (event) => {
+    if (!event.target.closest('.menu, .menu-attached')) {
+      this.props.clearMenus()
+    }
+  }
+
+  handleVisibilityChange = () => {
+    if (document.hidden === true) {
+      this.hideAllMenus()
+    }
   }
 
   hideAllMenus = () => {
@@ -94,18 +116,21 @@ class MenusContainer extends React.PureComponent {
 
   render () {
     const { activeMenu } = this.props
-    const { activeMenuPos } = this.state
+    const { activeMenuItemNode } = this.state
 
     return (
-      <React.Fragment>
+      <>
         <MenuBar onMenuDropdownClick={this.onMenuDropdownClick} />
-        <HelpMenu isActive={activeMenu === 'help'} position={activeMenuPos} />
-        <ContactMenu isActive={activeMenu === 'contact'} position={activeMenuPos} />
-        <ContributeMenu isActive={activeMenu === 'contribute'} position={activeMenuPos} />
-        <IdentityMenu isActive={activeMenu === 'identity'} position={activeMenuPos} />
-        <SettingsMenu isActive={activeMenu === 'settings'} position={activeMenuPos} />
-        <ShareMenu isActive={activeMenu === 'share'} position={activeMenuPos} />
-      </React.Fragment>
+        {/* Menus exist on a different z-index layer from the menu bar */}
+        <div className="menus-container">
+          <HelpMenu isActive={activeMenu === 'help'} menuItemNode={activeMenuItemNode} />
+          <ContactMenu isActive={activeMenu === 'contact'} menuItemNode={activeMenuItemNode} />
+          <ContributeMenu isActive={activeMenu === 'contribute'} menuItemNode={activeMenuItemNode} />
+          <SettingsMenu isActive={activeMenu === 'settings'} menuItemNode={activeMenuItemNode} />
+          <ShareMenu isActive={activeMenu === 'share'} menuItemNode={activeMenuItemNode} />
+          <IdentityMenu isActive={activeMenu === 'identity'} menuItemNode={activeMenuItemNode} alignOpposite />
+        </div>
+      </>
     )
   }
 }
@@ -116,11 +141,9 @@ function mapStateToProps (state) {
   }
 }
 
-function mapDispatchToProps (dispatch) {
-  return {
-    showMenu: (menu) => { dispatch(showMenu(menu)) },
-    clearMenus: () => { dispatch(clearMenus()) }
-  }
+const mapDispatchToProps = {
+  showMenu,
+  clearMenus
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MenusContainer)

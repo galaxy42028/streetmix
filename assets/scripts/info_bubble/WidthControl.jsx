@@ -6,10 +6,14 @@ import UpDownInput from './UpDownInput'
 import { trackEvent } from '../app/event_tracking'
 import {
   MIN_SEGMENT_WIDTH,
-  MAX_SEGMENT_WIDTH,
+  MAX_SEGMENT_WIDTH
+} from '../segments/constants'
+import {
+  incrementSegmentWidth
+} from '../store/actions/street'
+import {
   RESIZE_TYPE_TYPING,
   resizeSegment,
-  incrementSegmentWidth,
   resumeFadeoutControls
 } from '../segments/resizing'
 import {
@@ -22,17 +26,18 @@ class WidthControl extends React.Component {
   static propTypes = {
     intl: intlShape.isRequired,
     touch: PropTypes.bool,
-    segment: PropTypes.object, // eslint-disable-line react/no-unused-prop-types
     position: PropTypes.number,
     value: PropTypes.number,
     units: PropTypes.number,
-    locale: PropTypes.string
+    locale: PropTypes.string,
+    // provided by store
+    incrementSegmentWidth: PropTypes.func
   }
 
   handleIncrement = (event) => {
     const precise = event.shiftKey
 
-    incrementSegmentWidth(this.props.position, true, precise, this.props.value)
+    this.props.incrementSegmentWidth(true, precise, this.props.value)
     resumeFadeoutControls()
     trackEvent('INTERACTION', 'CHANGE_WIDTH', 'DECREMENT_BUTTON', null, true)
   }
@@ -40,7 +45,7 @@ class WidthControl extends React.Component {
   handleDecrement = (event) => {
     const precise = event.shiftKey
 
-    incrementSegmentWidth(this.props.position, false, precise, this.props.value)
+    this.props.incrementSegmentWidth(false, precise, this.props.value)
     resumeFadeoutControls()
     trackEvent('INTERACTION', 'CHANGE_WIDTH', 'INCREMENT_BUTTON', null, true)
   }
@@ -59,7 +64,7 @@ class WidthControl extends React.Component {
   updateModel = (value) => {
     const processedValue = processWidthInput(value, this.props.units)
     if (processedValue) {
-      resizeSegment(this.props.position, RESIZE_TYPE_TYPING, processedValue)
+      resizeSegment(this.props.position, RESIZE_TYPE_TYPING, processedValue, this.props.units)
     }
   }
 
@@ -120,11 +125,15 @@ function mapStateToProps (state, ownProps) {
   const segment = state.street.segments[ownProps.position]
   return {
     touch: state.system.touch,
-    segment: segment,
     value: (segment && segment.width) || null,
     units: state.street.units,
     locale: state.locale.locale
   }
 }
+function mapDispatchToProps (dispatch, ownProps) {
+  return {
+    incrementSegmentWidth: (add, precise, value) => dispatch(incrementSegmentWidth(ownProps.position, add, precise, value))
+  }
+}
 
-export default injectIntl(connect(mapStateToProps)(WidthControl))
+export default injectIntl(connect(mapStateToProps, mapDispatchToProps)(WidthControl))

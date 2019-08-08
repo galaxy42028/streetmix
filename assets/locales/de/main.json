@@ -15,14 +15,16 @@
     },
     "help": {
       "keyboard-label": "Tastatur-Shortcuts:",
-      "remove": "Entferne das Element, auf das du zeigst <br />(halte <kbd class='key'>Shift</kbd> gedrückt, um alle zu entfernen)",
-      "move": "Bewege dich auf der Straße <br /> (halte <kbd class='key'>Shift</kbd> gedrückt, um zu den Kanten zu springen)",
-      "change": "Ändere die Breite des Elements, auf das du zeigst <br />(halte <kbd class='key'>Shift</kbd> gedrückt für eine höhere Genauigkeit)"
+      "remove-instruction": "Entferne das Element, auf das du zeigst",
+      "remove-shift-instruction": "(halte {shiftKey} gedrückt, um alle zu entfernen)",
+      "move-instruction": "Bewege dich auf der Straße",
+      "move-shift-instruction": "(halte {shiftKey} gedrückt, um zu den Kanten zu springen)",
+      "change-instruction": "Ändere die Breite des Elements, auf das du zeigst",
+      "change-shift-instruction": "(halte {shiftKey} gedrückt für eine höhere Genauigkeit)"
     },
     "share": {
       "sign-in-twitter-link": "Anmelden",
       "sign-in-link": "{signInLink} für schönere Links zu deinen Straßen und deiner persönlichen Straßen-Galerie",
-      "sign-in": "<a href='#'>Anmelden</a> für schönere Links zu deinen Straßen und deiner persönlichn Straßen-Gallerie",
       "link": "Diesen Link zum Teilen kopieren und einfügen",
       "twitter": "Über Twitter teilen",
       "facebook": "Über Facebook teilen",
@@ -44,7 +46,10 @@
       "email": "Sende eine E-Mail an das Streetmix-Team",
       "github": "Quellcode auf GitHub ansehen",
       "blog": "Streetmix Blog ansehen",
-      "slack": "Slack Chat beitreten"
+      "discord": "",
+      "slack": "Slack Chat beitreten",
+      "minecraft": "",
+      "newsletter": ""
     },
     "contribute": {
       "donate": "Spenden",
@@ -123,7 +128,7 @@
   },
   "btn": {
     "reload": "Neu laden",
-    "undo": "Rückgängig machen",
+    "undo": "Rückgängig",
     "redo": "Wiederherstellen",
     "try-again": "Noch einmal versuchen",
     "cancel": "Abbrechen",
@@ -131,7 +136,8 @@
     "copy": "Kopie erstellen",
     "remove": "Entfernen",
     "close": "Schließen",
-    "dismiss": "Verwerfen"
+    "dismiss": "Verwerfen",
+    "okay": ""
   },
   "dialogs": {
     "error": {
@@ -169,6 +175,8 @@
       "sponsored-by": "Streetmix wird großzügigerweise gesponsert von:",
       "donate-link": "Unterstütze uns finanziell",
       "github-link": "Trage zu Open Source bei",
+      "open-source-link": "",
+      "guidebook-link": "",
       "tos-link": "Geschäftsbedingungen",
       "privacy-link": "Datenschutzrichtlinie"
     },
@@ -177,9 +185,10 @@
       "option-labels": "Namen und Breiten der Elemente",
       "option-name": "Straßenname",
       "option-sky": "Transparenter Himmel",
+      "option-watermark": "",
       "loading": "Laden…",
       "save-button": "Auf deinem Computer speichern…",
-      "license": "Dieses mit Streetmix erstellte Bild darf überall, für jeden Zweck unter der <br><a href='{url}'>Creative Commons Namensnennung - Share Alike 4.0 international Linzenz</a> verwendet werden.",
+      "license": "Dieses mit Streetmix erstellte Bild darf überall, für jeden Zweck unter der {licenseLink} Linzenz verwendet werden.",
       "error-preview": "Beim Anzeigen der Vorschau ist ein Fehler aufgetreten.",
       "error-unavailable": "Das Bild kann in diesem Browser nicht gespeichert werden.",
       "preview-image-alt": "Vorschau"
@@ -192,7 +201,8 @@
       "add-location": "Ort hinzufügen",
       "confirm-location": "Ort bestätigen",
       "clear-location": "Ort löschen",
-      "unknown-location": "Unbekannter Ort"
+      "unknown-location": "Unbekannter Ort",
+      "geotag-unavailable": ""
     },
     "donate": {
       "heading": "Streetmix braucht deine Hilfe!",
@@ -206,6 +216,7 @@
       "description": "Speichere deinen ersten Entwurf oder melde dich an, um auf ältere Entwürfe zuzugreifen.",
       "email-label": "E-Mail",
       "email-description": "Wir senden dir einen Anmeldelink zu. Du benötigst kein Passwort.",
+      "email-invalid": "Oh je! Das sieht nicht wie eine korrekte E-Mail-Adresse aus. Bitte probier es nochmal.",
       "social-heading": "oder",
       "button": {
         "email": "Mit E-Mail fortfahren",
@@ -215,16 +226,24 @@
       },
       "tos": "Indem ich auf einen dieser Buttons klicke, stimme ich den {tosLink} und der {privacyLink} zu.",
       "tos-link-label": "Geschäftsbedingungen",
-      "privacy-link-label": "Datenschutzrichtlinie"
+      "privacy-link-label": "Datenschutzrichtlinie",
+      "loading-message": "Anmeldung läuft...",
+      "sent-message-with-email": "Wir haben ein E-Mail an {email} gesendet. Bitte folge der Anleitung darin, um dich anzumelden!",
+      "email-unreceived": "Nicht bekommen?",
+      "resend-email": "E-Mail nochmal senden"
     },
     "whatsnew": {
       "heading": "Was gibt es Neues bei Streetmix?"
+    },
+    "newsletter": {
+      "heading": ""
     }
   },
   "prompt": {
     "new-street": "Neuer Straßenname:",
     "delete-street": "Bist du sicher, dass du {streetName} dauerhaft löschen möchtest? Dies kann nicht rückgängig gemacht werden.",
-    "new-width": "Neue Straßenbreite (von {minWidth} bis {maxWidth}):"
+    "new-width": "Neue Straßenbreite (von {minWidth} bis {maxWidth}):",
+    "segment-label": ""
   },
   "toast": {
     "segment-deleted": "Das Element wurde entfernt.",
@@ -272,10 +291,14 @@
     "increase-width": "Breite vergrößern (Shift gedrückt halten für eine höhere Genauigkeit)",
     "decrease-width": "Breite verkleinern (Shift gedrückt halten für eine höhere Genauigkeit)",
     "add-floor": "Stockwerk hinzufügen",
-    "remove-floor": "Stockwerk entfernen"
+    "remove-floor": "Stockwerk entfernen",
+    "scroll-street-left": "",
+    "scroll-street-right": "",
+    "scroll-left": "",
+    "scroll-right": ""
   },
   "street": {
-    "default-name": "Beispielstraße",
+    "default-name": "Unbenannte Straße",
     "rename": "Klicken zum Umbenennen"
   },
   "building": {
@@ -316,9 +339,22 @@
     "anonymous": "Anonym",
     "byline": "erstellt von {user}"
   },
+  "export": {
+    "watermark": ""
+  },
   "meta": {
     "description": "Gestalte, remixe und teile die Straßen in deiner Nachbarschaft - einfach in deinem Browser! Füge Bäume oder Radwege hinzu, verbreitere Gehwege oder Fahrstreifen, und erfahre, wie deine Entscheidungen deine Gemeinde beeinflussen können.",
     "page-title": "{streetName} (von {author})"
+  },
+  "credits": {
+    "core-team-heading": "",
+    "past-team-heading": "",
+    "advisors": "",
+    "additional-illustrations": "",
+    "additional-code": "",
+    "additional-contributors": "",
+    "special-thanks": "",
+    "translators": ""
   },
   "i18n": {
     "lang": {
@@ -334,6 +370,7 @@
       "pt-br": "Portugiesisch (Brasilien)",
       "ru": "Russisch",
       "sv": "Schwedisch",
+      "zh": "Chinesisch",
       "zh-hans": "Hochchinesisch",
       "zh-hant": "Traditionelles Chinesisch"
     }

@@ -1,27 +1,26 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { FormattedMessage } from 'react-intl'
+import Dialog from './Dialog'
+import './WhatsNewDialog.scss'
 
-export default class WhatsNewDialog extends React.PureComponent {
-  static propTypes = {
-    closeDialog: PropTypes.func
-  }
-
-  render () {
-    return (
-      <div className="dialog-type-2 whats-new-dialog">
+const WhatsNewDialog = () => (
+  <Dialog>
+    {(closeDialog) => (
+      <div className="whats-new-dialog">
         <header>
           <h1>
-            <FormattedMessage id="dialogs.whatsnew.heading" defaultMessage="What’s new in Streetmix?" />
+            <FormattedMessage id="dialogs.whatsnew.heading" defaultMessage="What’s new in Streetmix?&lrm;" />
           </h1>
         </header>
         <div className="dialog-content dialog-content-bleed">
           <iframe src="/pages/whats-new/" />
         </div>
-        <footer onClick={this.props.closeDialog}>
+        <button className="dialog-primary-action" onClick={closeDialog}>
           <FormattedMessage id="btn.close" defaultMessage="Close" />
-        </footer>
+        </button>
       </div>
-    )
-  }
-}
+    )}
+  </Dialog>
+)
+
+export default WhatsNewDialog

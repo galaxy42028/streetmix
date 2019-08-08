@@ -3,6 +3,10 @@
     "label": "UI — Geotagging",
     "defaultValue": true
   },
+  "ANALYTICS": {
+    "label": "UI — Street analytics",
+    "defaultValue": false
+  },
   "EDIT_STREET_WIDTH": {
     "label": "UI — Edit street width",
     "defaultValue": true
@@ -11,9 +15,21 @@
     "label": "UI — Edit street name",
     "defaultValue": true
   },
-  "EDIT_BUILDINGS": {
-    "label": "UI — Edit buildings",
+  "EDIT_BUILDINGS_LEFT": {
+    "label": "UI — Edit left-side buildings",
     "defaultValue": true
+  },
+  "EDIT_BUILDINGS_RIGHT": {
+    "label": "UI — Edit right-side buildings",
+    "defaultValue": true
+  },
+  "ENVIRONMENT_EDITOR": {
+    "label": "Environment editor",
+    "defaultValue": false
+  },
+  "BODY_FONT_UPDATE": {
+    "label": "Experimental body font update",
+    "defaultValue": false
   },
   "SAVE_UNDO": {
     "label": "Save undo data to server",
@@ -36,16 +52,59 @@
     "label": "Locales — level 3 (complete, final)",
     "defaultValue": true
   },
+  "SEGMENT_3D_PARKING": {
+    "label": "Segment — 3d angled parking",
+    "defaultValue": false,
+    "enabled": false
+  },
+  "SEGMENT_AV": {
+    "label": "Segment — autonomous vehicles",
+    "defaultValue": false
+  },
+  "SEGMENT_CAFE_SEATING": {
+    "label": "Segment — cafe seating",
+    "defaultValue": false
+  },
+  "SEGMENT_CONSTRUCTION": {
+    "label": "Segment — construction items",
+    "defaultValue": false,
+    "enabled": false
+  },
   "SEGMENT_INCEPTION_TRAIN": {
     "label": "Segment — the train from “Inception”",
+    "defaultValue": false
+  },
+  "SEGMENT_MAGIC_CARPET": {
+    "label": "Segment — magic carpet",
+    "defaultValue": false
+  },
+  "SEGMENT_RAISED_BIKES": {
+    "label": "Segment — raised bike lanes",
+    "defaultValue": false,
+    "enabled": false
+  },
+  "SEGMENT_SCOOTERS": {
+    "label": "Segment — scooters",
+    "defaultValue": true
+  },
+  "SEGMENT_UTILITIES": {
+    "label": "Segment — utility pole",
     "defaultValue": false
   },
   "DEBUG_SEGMENT_CANVAS_RECTANGLES": {
     "label": "Segment — [debug] canvas rectangles",
     "defaultValue": false
   },
+  "CUSTOM_SEGMENT_LABELS": {
+    "label": "Custom segment labels",
+    "defaultValue": false
+  },
   "SAVE_AS_IMAGE_CUSTOM_DPI": {
     "label": "Save images at custom DPI",
+    "defaultValue": false
+  },
+  "EXPORT_WATERMARK": {
+    "label": "Allow exporting images without watermark",
     "defaultValue": false
   },
   "ALWAYS_DISPLAY_WHATS_NEW": {
@@ -54,10 +113,18 @@
   },
   "DONATE_NAG_SCREEN": {
     "label": "Donation nag screen",
-    "defaultValue": true
+    "defaultValue": false
+  },
+  "BUSINESS_PLAN": {
+    "label": "Activate purchasing funnel",
+    "defaultValue": false
   },
   "AUTHENTICATION_V2": {
     "label": "Authentication v2",
     "defaultValue": true
+  },
+  "SILLY_CLOWNS": {
+    "label": "Silly clowns",
+    "defaultValue": false
   }
 }

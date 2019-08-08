@@ -15,14 +15,16 @@
     },
     "help": {
       "keyboard-label": "اختصارات لوحة المفاتيح:",
-      "remove": "إزالة الجزء الذي تُشير إليه<br />(إضغط مفتاح <kbd class='key'>Shift</kbd> لإزالة الكل)",
-      "move": "جولة حول الشارع<br />(اضغط على مفتاح <kbd class='key'>Shift</kbd> للانتقال إلى الحواف)",
-      "change": "تغيير عرض الجزء الذي تُشير إليه<br />(لمزيد من الدقة إضغط على المفتاح <kbd class='key'>Shift</kbd>)"
+      "remove-instruction": "إزالة الجزء الذي تُشير إليه",
+      "remove-shift-instruction": "(إضغط مفتاح {shiftKey} لإزالة الكل)",
+      "move-instruction": "جولة حول الشارع",
+      "move-shift-instruction": "(اضغط على مفتاح {shiftKey} للانتقال إلى الحواف)",
+      "change-instruction": "تغيير عرض الجزء الذي تُشير إليه",
+      "change-shift-instruction": "(لمزيد من الدقة إضغط على المفتاح {shiftKey})"
     },
     "share": {
       "sign-in-twitter-link": "تسجيل الدخول",
       "sign-in-link": "{signInLink} للحصول على روابط أجمل لشوارع ولمعرض الصور الشخصي",
-      "sign-in": "<a href='#'>سجّل الدخول</a> للحصول على روابط أجمل إلى شوارعك الخاصة ومعرض صور شارعك الخاص",
       "link": "نسخ ولصق هذا الرابط لمشاركته:",
       "twitter": "مشاركة باستخدام تويتر",
       "facebook": "مشاركة باستخدام الفيسبوك",
@@ -44,7 +46,10 @@
       "email": "أرسل بريد إلكتروني إلى فريق Streetmix",
       "github": "إظهار شيفرة المصدر على GitHub",
       "blog": "زيارة مدونة Streetmix",
-      "slack": "الانضمام إلى غرفة الدردشة الهادئة"
+      "discord": "",
+      "slack": "الانضمام إلى غرفة الدردشة الهادئة",
+      "minecraft": "",
+      "newsletter": ""
     },
     "contribute": {
       "donate": "تبرع",
@@ -131,7 +136,8 @@
     "copy": "عمل نسخة",
     "remove": "إزالة",
     "close": "إغلاق",
-    "dismiss": "صرف النظر"
+    "dismiss": "صرف النظر",
+    "okay": ""
   },
   "dialogs": {
     "error": {
@@ -169,6 +175,8 @@
       "sponsored-by": "مشروع Streetmix برعاية سخيّة من:",
       "donate-link": "إدعمنا مالياً",
       "github-link": "مساهمة في فتح شيفرة المصدر",
+      "open-source-link": "",
+      "guidebook-link": "",
       "tos-link": "",
       "privacy-link": ""
     },
@@ -177,9 +185,10 @@
       "option-labels": "عرض الأجزاء وأسمائها",
       "option-name": "اسم الشارع",
       "option-sky": "سماء شفافة",
+      "option-watermark": "",
       "loading": "تحميل…",
       "save-button": "حفظ في جهاز الكمبيوتر الخاص بك…",
-      "license": "قد يتم إعادة استخدام هذه الصورة التي تم إنشائها باستخدام Streetmix في أي مكان ولأي غرص بموجب <br><a href='{url}'>Creative Commons Attribution-ShareAlike 4.0 International License</a>.",
+      "license": "قد يتم إعادة استخدام هذه الصورة التي تم إنشائها باستخدام Streetmix في أي مكان ولأي غرص بموجب {licenseLink}.",
       "error-preview": "فشل عرض صورة المعاينة.",
       "error-unavailable": "تعذر الحفظ على الصورة في هذا المتصفح.",
       "preview-image-alt": "عرض مسبق"
@@ -192,7 +201,8 @@
       "add-location": "إضافة موقع",
       "confirm-location": "تأكيد الموقع",
       "clear-location": "إزالة الموقع",
-      "unknown-location": "موقع غير محدد"
+      "unknown-location": "موقع غير محدد",
+      "geotag-unavailable": ""
     },
     "donate": {
       "heading": "يحتاج Streetmix إلى مساعدتكم!",
@@ -206,6 +216,7 @@
       "description": "",
       "email-label": "",
       "email-description": "",
+      "email-invalid": "",
       "social-heading": "",
       "button": {
         "email": "",
@@ -215,16 +226,24 @@
       },
       "tos": "",
       "tos-link-label": "",
-      "privacy-link-label": ""
+      "privacy-link-label": "",
+      "loading-message": "",
+      "sent-message-with-email": "",
+      "email-unreceived": "",
+      "resend-email": ""
     },
     "whatsnew": {
+      "heading": ""
+    },
+    "newsletter": {
       "heading": ""
     }
   },
   "prompt": {
     "new-street": "اسم شارع جديد:",
     "delete-street": "هل أنت متأكد من أنك تُريد حذف {streetName}؟ لا يمكنك التراجع عن هذه الخطوة.",
-    "new-width": "عرض شارع جديد (من {minWidth} إلى {maxWidth}): "
+    "new-width": "عرض شارع جديد (من {minWidth} إلى {maxWidth}): ",
+    "segment-label": ""
   },
   "toast": {
     "segment-deleted": "تم إزالة الجزء.",
@@ -272,7 +291,11 @@
     "increase-width": "زيادة العرض (لمزيد من الدقة إضغط على المفتاح Shift)",
     "decrease-width": "تقليل العرض (لمزيد من الدقة إضغط على المفتاح Shift)",
     "add-floor": "إضافة طابق",
-    "remove-floor": "إزالة الطابق"
+    "remove-floor": "إزالة الطابق",
+    "scroll-street-left": "",
+    "scroll-street-right": "",
+    "scroll-left": "",
+    "scroll-right": ""
   },
   "street": {
     "default-name": "شارع غير مُسمى",
@@ -316,9 +339,22 @@
     "anonymous": "مجهول",
     "byline": "من قبل {user}"
   },
+  "export": {
+    "watermark": ""
+  },
   "meta": {
     "description": "قم بتصميم وإعادة توزيع شارع الحي ومشاركته - كل ذلك من خلال متصفحك! أضف أشجار أو مسارات الدراجات، قم بتوسيع الأرصفة أو الممرات المرورية، تعلم كيف يمكن لقراراتك التأثير في مجتمعك.",
     "page-title": "{streetName} (بواسطة {author})"
+  },
+  "credits": {
+    "core-team-heading": "",
+    "past-team-heading": "",
+    "advisors": "",
+    "additional-illustrations": "",
+    "additional-code": "",
+    "additional-contributors": "",
+    "special-thanks": "",
+    "translators": ""
   },
   "i18n": {
     "lang": {
@@ -334,6 +370,7 @@
       "pt-br": "لغة برتغالية",
       "ru": "الروسية",
       "sv": "لغة سويدية",
+      "zh": "الصينية",
       "zh-hans": "الصينية المبسطة",
       "zh-hant": "الصينية التقليدية"
     }

@@ -1,11 +1,11 @@
 {
   "segments": {
     "sidewalk": "歩道",
-    "sidewalk-tree": "街路樹つき歩道",
+    "sidewalk-tree": "街路樹",
     "bike-rack": "自転車置場",
     "bench": "ベンチ",
     "wayfinding-sign": "道路名標識",
-    "sidewalk-lamp": "街灯つき歩道",
+    "sidewalk-lamp": "街灯",
     "parklet": "パークレット",
     "divider": "バッファーゾーン",
     "planting-strip": "緑地・花壇",
@@ -13,6 +13,8 @@
     "median": "中央分離帯",
     "bollard": "ボラード",
     "dome": "車両除外ドーム",
+    "scooter": "",
+    "scooter-drop-zone": "",
     "bike-lane": "自転車専用レーン",
     "parking-lane": "路上駐車スペース",
     "perpendicular-parking": "道路に対して直角",

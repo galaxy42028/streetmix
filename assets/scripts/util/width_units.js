@@ -1,5 +1,6 @@
 import { SETTINGS_UNITS_IMPERIAL, SETTINGS_UNITS_METRIC } from '../users/constants'
 import store from '../store'
+import memoizeFormatConstructor from './memoized_formatting'
 
 const IMPERIAL_METRIC_MULTIPLIER = 30 / 100
 const METRIC_PRECISION = 3
@@ -10,11 +11,13 @@ const WIDTH_INPUT_CONVERSION = [
   { text: 'м', multiplier: 1 / IMPERIAL_METRIC_MULTIPLIER },
   { text: 'cm', multiplier: 1 / 100 / IMPERIAL_METRIC_MULTIPLIER },
   { text: '"', multiplier: 1 / 12 },
+  { text: '″', multiplier: 1 / 12 },
   { text: 'in', multiplier: 1 / 12 },
   { text: 'in.', multiplier: 1 / 12 },
   { text: 'inch', multiplier: 1 / 12 },
   { text: 'inches', multiplier: 1 / 12 },
   { text: "'", multiplier: 1 },
+  { text: '′', multiplier: 1 },
   { text: 'ft', multiplier: 1 },
   { text: 'ft.', multiplier: 1 },
   { text: 'feet', multiplier: 1 }
@@ -93,29 +96,43 @@ export function prettifyWidth (width, units, locale) {
   switch (units) {
     case SETTINGS_UNITS_IMPERIAL:
       widthText = getImperialMeasurementWithVulgarFractions(width, locale) // also converts to string
-      widthText += "'"
+      widthText += '′'
       break
     case SETTINGS_UNITS_METRIC:
     default:
       widthText = stringifyMeasurementValue(width, SETTINGS_UNITS_METRIC, locale)
-      // In Russian, the Cyrillic м is common in vernacular usage.
-      // This is in defiance of SI, but should be friendlier.
-      if (locale === 'ru') {
-        widthText += ' м'
-      } else {
-        widthText += ' m'
+
+      // Locale-specific units
+      switch (locale) {
+        // In Russian, the Cyrillic м is common in vernacular usage.
+        // This is in defiance of SI, but should be friendlier.
+        case 'ru':
+          widthText += ' м'
+          break
+        // In Arabic, use the same character that the USDM uses for metric units
+        case 'ar':
+          widthText += ' م'
+          break
+        default:
+          widthText += ' m'
+          break
       }
+
       break
   }
 
   return widthText
 }
 
+const NumberFormat = memoizeFormatConstructor(Intl.NumberFormat)
 /**
  * Returns a measurement value as a locale-sensitive string without units or formatting,
  * and converts to the desired units, if necessary.
  * Used primarily when converting input box values to a simple number format
  *
+ * @todo Memoize the Intl.NumberFormat constructor, since this becomes very slow if many of
+ *          these are called in succession. See https://github.com/yahoo/intl-format-cache
+ *          for inspiration and reference.
  * @param {Number} value - original measurement value
  * @param {Number} units - either SETTINGS_UNITS_METRIC or SETTINGS_UNITS_IMPERIAL
  *          Defaults to metric.
@@ -134,12 +151,12 @@ export function stringifyMeasurementValue (value, units, locale) {
 
   switch (units) {
     case SETTINGS_UNITS_IMPERIAL:
-      string = new Intl.NumberFormat(locale, { style: 'decimal', maximumFractionDigits: IMPERIAL_PRECISION }).format(value)
+      string = NumberFormat(locale, { style: 'decimal', maximumFractionDigits: IMPERIAL_PRECISION }).format(value)
       break
     case SETTINGS_UNITS_METRIC:
     default:
       const convertedValue = convertImperialMeasurementToMetric(value)
-      string = new Intl.NumberFormat(locale, { style: 'decimal', maximumFractionDigits: METRIC_PRECISION }).format(convertedValue)
+      string = NumberFormat(locale, { style: 'decimal', maximumFractionDigits: METRIC_PRECISION }).format(convertedValue)
       break
   }
 

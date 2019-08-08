@@ -1,0 +1,14 @@
+@import '../../styles/variables.scss';
+
+.menus-container {
+  position: absolute;
+  left: $menu-side-inset;
+  right: $menu-side-inset;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: $z-menu;
+
+  // Required in Firefox to get perspective to work on menus
+  transform-style: preserve-3d;
+}

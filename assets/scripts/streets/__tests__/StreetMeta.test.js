@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import React from 'react'
 import StreetMeta from '../StreetMeta'
-import { shallow } from 'enzyme'
+import { renderWithReduxAndIntl } from '../../../../test/helpers/render'
 
 jest.mock('../../streets/remix', () => {
   return {
@@ -10,13 +10,12 @@ jest.mock('../../streets/remix', () => {
 })
 
 jest.mock('../../app/load_resources', () => {})
-jest.mock('../../app/routing', () => {})
 jest.mock('../../app/initialization', () => {})
 jest.mock('../../preinit/app_settings', () => {})
 
 describe('StreetMeta', () => {
   it('renders without crashing', () => {
-    const wrapper = shallow(<StreetMeta />)
-    expect(wrapper.exists()).toEqual(true)
+    const wrapper = renderWithReduxAndIntl(<StreetMeta />)
+    expect(wrapper.asFragment()).toMatchSnapshot()
   })
 })
