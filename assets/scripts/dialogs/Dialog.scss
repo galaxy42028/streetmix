@@ -36,8 +36,6 @@ $dialog-border-radius: $border-radius;
 }
 
 .dialog-box {
-  @include box-border;
-
   position: relative;
   // balance the dialog by making it slightly north of center
   margin-top: -3%;
@@ -49,8 +47,6 @@ $dialog-border-radius: $border-radius;
   touch-action: none;
 
   /* New styles! Let's try it! */
-  border-top: 0;
-  border-bottom: 0;
   border-radius: $dialog-border-radius;
   overflow: hidden;
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.075);
