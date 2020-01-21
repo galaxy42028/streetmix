@@ -34,46 +34,7 @@ You may already have some of these prerequisites installed. Skip or update the p
 
       brew install nodejs
 
-4. Install `MongoDB version 3.4 <https://www.mongodb.com/download-center/community>`_. Newer versions of MongoDB may introduce breaking changes, and we have a long term plan to migrate away from MongoDB and towards PostgreSQL. In the example command below, we will install MongoDB with Homebrew:
-
-   .. prompt:: bash $
-
-      brew install mongodb@3.4
-
-5. `Set up MongoDB's data directory <https://docs.mongodb.org/manual/tutorial/install-mongodb-on-os-x/#run-mongodb>`_.
-
-   .. prompt:: bash $
-
-      mkdir -p /data/db
-      chmod 777 /data/db
-
-.. warning::
-
-   These instructions are now out-of-date on Mac OS X 10.15 (Catalina), as those paths are no longer writeable. You will need to set the database path to another location, such as ``/System/Volumes/Data/data/db``, and run MongoDB using the ``--dbpath`` option to point to the new location.
-
-
-.. tip::
-
-   You may run into permissions issues, even if you are an administrator on your machine. You may need to run ``chown`` to give yourself ownership over any directories that you are manipulating. Alternatively, you may need to use ``sudo`` to run commands as a superuser.
-
-6. Add MongoDB binaries to the PATH environment variable. The most common way this can be done by editing :file:`~/.bash_profile`. Using a text editor, open that file and add this line at the bottom of it:
-
-   .. code::
-
-      export PATH="/usr/local/opt/mongodb@3.4/bin:$PATH"
-
-   Save the file, then restart your Terminal. You can double check if this worked like so:
-
-   .. prompt:: bash $
-
-      echo $PATH
-
-.. note::
-
-   Some systems are set up differently and may have other methods for setting environment variables.
-
-
-7. **Optional: Install PostgreSQL.** We are currently working to migrate our database from MongoDB to Postgres. You can `download MacOSX packages here <https://www.postgresql.org/download/macosx/>`_ or use the `Postgress app <https://postgresapp.com/>`_, but the easiest method would be to use Homebrew, again:
+4. Install PostgreSQL. You can `download MacOSX packages here <https://www.postgresql.org/download/macosx/>`_ or use the `Postgress app <https://postgresapp.com/>`_, but the easiest method would be to use Homebrew, again:
 
    .. prompt:: bash $
 
