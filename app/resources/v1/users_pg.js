@@ -10,7 +10,7 @@ const Op = Sequelize.Op
 
 exports.post = async function (req, res) {
   let loginToken = null
-  const hasPriorCall = !!(res.mainData && res.mainData.id)
+  const hasPriorCall = false
 
   const handleCreateUser = function (err, user) {
     if (err) {
@@ -29,13 +29,14 @@ exports.post = async function (req, res) {
     }
   } // END function - handleCreateUser
 
-  const handleUpdateUser = function (err, user) {
+  const handleUpdateUserError = function (err) {
     if (err) {
       logger.error(err)
       res.status(500).json({ status: 500, msg: 'Could not update user.' })
-      return
     }
+  }
 
+  const handleUpdateUser = function (user) {
     const userJson = { id: user.id, loginToken: loginToken }
     logger.info({ user: userJson }, 'Existing user issued new login token.')
 
@@ -48,12 +49,14 @@ exports.post = async function (req, res) {
   } // END function - handleUpdateUser
 
   const handleAuth0TwitterSignIn = async function (credentials) {
+    console.error('handleAuth0TwitterSignIn')
     try {
       let user
       if (credentials.auth0_id) {
         user = await User.findOne({ where: { id: credentials.screenName } })
       }
-      loginToken = hasPriorCall ? res.mainData.loginToken : uuid.v1()
+      loginToken = uuid.v1()
+      console.error('hey now', user, loginToken)
       if (!user) {
         const newUserData = {
           id: credentials.screenName,
@@ -72,7 +75,9 @@ exports.post = async function (req, res) {
         } else {
           user.login_tokens = [loginToken]
         }
-        user.save().then(handleUpdateUser)
+        User.update(user, { where: { id: credentials.screenName } })
+          .then(handleUpdateUser)
+          .catch(handleUpdateUserError)
       }
     } catch (err) {
       logger.error(err)
@@ -85,6 +90,7 @@ exports.post = async function (req, res) {
   } // END function - handleAuth0TwitterSignIn
 
   const handleTwitterSignIn = async function (credentials) {
+    console.error('handleTwitterSignIn')
     try {
       let user
       if (credentials.auth0_id) {
@@ -109,7 +115,9 @@ exports.post = async function (req, res) {
         } else {
           user.login_tokens = [loginToken]
         }
-        user.save().then(handleUpdateUser)
+        User.update(user, { where: { id: credentials.screenName } })
+          .then(handleUpdateUser)
+          .catch(handleUpdateUserError)
       }
     } catch (err) {
       logger.error(err)
@@ -163,6 +171,7 @@ exports.post = async function (req, res) {
   }
 
   const handleAuth0SignIn = async function (credentials) {
+    console.error('handleAuth0SignIn')
     try {
       let user
       if (credentials.auth0_id) {
@@ -207,7 +216,9 @@ exports.post = async function (req, res) {
           user.login_tokens = []
         }
         user.login_tokens.push(loginToken)
-        user.save().then(handleUpdateUser)
+        User.update(user, { where: { id: credentials.screenName } })
+          .then(handleUpdateUser)
+          .catch(handleUpdateUserError)
       }
     } catch (err) {
       logger.error(err)
@@ -464,3 +475,43 @@ exports.put = async function (req, res) {
         .json({ status: 500, msg: 'Could not update user information.' })
     })
 } // END function - exports.put
+
+exports.logout = async function (req, res) {
+  // Flag error if user ID is not provided
+  if (!req.params.user_id) {
+    res.status(400).json({ status: 400, msg: 'Please provide user ID.' })
+    return
+  }
+
+  const userId = req.params.user_id
+
+  let user
+
+  try {
+    user = await User.findOne({ where: { id: userId } })
+  } catch (err) {
+    logger.error(err)
+    res.status(500).json({ status: 500, msg: 'Error finding user.' })
+  }
+
+  if (!user) {
+    res.status(404).json({ status: 404, msg: 'User not found.' })
+    return
+  }
+
+  const idx = user.login_tokens.indexOf(req.loginToken)
+  if (idx === -1) {
+    res.status(401).end()
+    return
+  }
+  user.login_tokens.splice(idx, 1)
+
+  User.update(user, { where: { id: userId }, returning: true })
+    .then((user) => {
+      res.status(204).end()
+    })
+    .catch((err) => {
+      logger.error(err)
+      res.status(500).json({ status: 500, msg: 'Could not sign-out user.' })
+    })
+} // END function - exports.delete

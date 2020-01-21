@@ -8,15 +8,13 @@ const { User, Sequelize, Street, Sequence } = require('../../db/models')
 const Op = Sequelize.Op
 
 exports.post = async function (req, res) {
+  console.error('STREETS PG POST')
   let body
-  const street = new Street()
+  const street = {}
 
-  // we are mirroring a mongoDB call, so use the same IDs.
-  const hasPriorCall = !!(
-    res.mainData &&
-    (res.mainData.id || res.mainData.status)
-  )
+  const hasPriorCall = false
   street.id = hasPriorCall ? res.mainData.id : uuid.v1()
+  console.error('POSTING NEW STREET', hasPriorCall, street.id, req.body)
   const requestIp = function (req) {
     if (req.headers['x-forwarded-for'] !== undefined) {
       return req.headers['x-forwarded-for'].split(', ')[0]
@@ -25,7 +23,7 @@ exports.post = async function (req, res) {
     }
   }
 
-  if (req.body && req.body.length > 0) {
+  if (req.body) {
     try {
       body = req.body
     } catch (e) {
@@ -39,6 +37,7 @@ exports.post = async function (req, res) {
     street.namespaced_id = body.data.namespacedId
     street.client_updated_at = body.clientUpdatedAt
     street.data = body.data
+    console.log({ data: street.data, bodyKeys: Object.keys(body) })
     street.creator_ip = requestIp(req)
   }
 
@@ -136,45 +135,32 @@ exports.post = async function (req, res) {
         street.original_street_id = origStreet
       }
 
-      if (hasPriorCall) {
-        street.client_updated_at = res.mainData.clientUpdatedAt
-        street.namespaced_id = res.mainData.namespacedId
-      } else {
-        const namespacedId = await makeNamespacedId()
-        street.namespaced_id = namespacedId
-      }
-
-      // const namespacedId = await makeNamespacedId()
-      // street.namespaced_id = namespacedId
-
-      await street.save()
-      return street
-    }
-
-    if (hasPriorCall) {
-      street.client_updated_at = res.mainData.clientUpdatedAt
-      street.namespaced_id = res.mainData.namespacedId
-    } else {
       const namespacedId = await makeNamespacedId()
       street.namespaced_id = namespacedId
+
+      // await street.save({ returning: true })
+      return Street.create(street)
     }
-    await street.save()
-    return street
+
+    const namespacedId = await makeNamespacedId()
+    street.namespaced_id = namespacedId
+    console.error('about to save...', street)
+    // await street.save({ returning: true })
+    return Street.create(street)
+    // return street;
   }
 
   const handleCreatedStreet = (s) => {
+    console.error('handleCreatedStreet')
     s = asStreetJson(s)
     logger.info({ street: s }, 'New street created.')
-    if (hasPriorCall) {
-      res.send(s)
-    } else {
-      res.status(201).send(s)
-      res.header('Location', config.restapi.baseuri + '/v1/streets/' + s.id)
-    }
+    res.header('Location', config.restapi.baseuri + '/v1/streets/' + s.id)
+    res.status(201).send(s)
   }
 
   if (req.loginToken) {
     let user
+    console.log('trying to find...', req.loginToken)
     try {
       user = await User.findOne({
         where: { login_tokens: { [Op.contains]: [req.loginToken] } }
