@@ -56,7 +56,7 @@ exports.post = async function (req, res) {
         user = await User.findOne({ where: { id: credentials.screenName } })
       }
       loginToken = uuid.v1()
-      console.error('hey now', user, loginToken)
+      // console.error('hey now', user, loginToken)
       if (!user) {
         const newUserData = {
           id: credentials.screenName,

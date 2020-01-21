@@ -16,7 +16,7 @@ const AccessTokenHandler = function (req, res) {
     try {
       const user = await auth0.getProfile(body.access_token)
       const apiRequestBody = getUserInfo(user)
-
+      console.error('???', apiRequestBody)
       //  Must be an absolute URI
       const endpoint =
         config.restapi.protocol +
@@ -27,7 +27,18 @@ const AccessTokenHandler = function (req, res) {
         .post(endpoint, apiRequestBody)
         .then((response) => {
           const body = response.data
-          res.cookie('user_id', body.id)
+          console.error(
+            '!!! setting cookies!!!',
+            body.id,
+            body.loginToken,
+            Object.keys(body)
+          )
+
+          // TODO add code to properly resolve user_id
+          res.cookie(
+            'user_id',
+            body.id || apiRequestBody.auth0_twitter.screenName
+          )
           res.cookie('login_token', body.loginToken)
           res.redirect('/just-signed-in')
         })

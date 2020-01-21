@@ -8,13 +8,13 @@ const { User, Sequelize, Street, Sequence } = require('../../db/models')
 const Op = Sequelize.Op
 
 exports.post = async function (req, res) {
-  console.error('STREETS PG POST')
+  // console.error('STREETS PG POST')
   let body
   const street = {}
 
   const hasPriorCall = false
   street.id = hasPriorCall ? res.mainData.id : uuid.v1()
-  console.error('POSTING NEW STREET', hasPriorCall, street.id, req.body)
+  // console.error('POSTING NEW STREET', hasPriorCall, street.id, req.body)
   const requestIp = function (req) {
     if (req.headers['x-forwarded-for'] !== undefined) {
       return req.headers['x-forwarded-for'].split(', ')[0]
@@ -37,7 +37,7 @@ exports.post = async function (req, res) {
     street.namespaced_id = body.data.namespacedId
     street.client_updated_at = body.clientUpdatedAt
     street.data = body.data
-    console.log({ data: street.data, bodyKeys: Object.keys(body) })
+    // console.error({ data: street.data, bodyKeys: Object.keys(body) })
     street.creator_ip = requestIp(req)
   }
 
@@ -91,13 +91,16 @@ exports.post = async function (req, res) {
   }
 
   const makeNamespacedId = async function () {
+    console.error('makeNamespacedId')
     let namespacedId
     try {
       if (street.creator_id) {
         const user = await updateUserLastStreetId(street.creator_id)
         namespacedId = user && user.last_street_id ? user.last_street_id : 1
       } else {
+        console.error('updating sequence...')
         const sequence = await updateSequence()
+        console.error('done updating sequence...', sequence)
         if (isArray(sequence)) {
           namespacedId = sequence[1][0].seq
         } else {
@@ -113,34 +116,35 @@ exports.post = async function (req, res) {
       throw new Error(ERRORS.CANNOT_CREATE_STREET)
     }
     return namespacedId
-  } // END function - makeNamespacedId
+  }
 
   const saveStreet = async function () {
+    console.error('saveStreet')
     if (body && body.originalStreetId) {
+      console.error('saveStreet door 1', body.originalStreetId)
       let origStreet
-      if (hasPriorCall) {
-        street.original_street_id = res.mainData.originalStreetId
-      } else {
-        try {
-          origStreet = await Street.findByPk(body.originalStreetId)
-        } catch (err) {
-          logger.error(err)
-          throw new Error(ERRORS.STREET_NOT_FOUND)
-        }
-
-        if (!origStreet || origStreet.status === 'DELETED') {
-          throw new Error(ERRORS.STREET_NOT_FOUND)
-        }
-
-        street.original_street_id = origStreet
+      try {
+        origStreet = await Street.findByPk(body.originalStreetId)
+      } catch (err) {
+        logger.error(err)
+        throw new Error(ERRORS.STREET_NOT_FOUND)
       }
+      console.error('saveStreet door 1b', origStreet.origStreet())
 
+      if (!origStreet || origStreet.status === 'DELETED') {
+        throw new Error(ERRORS.STREET_NOT_FOUND)
+      }
+      street.original_street_id = res.mainData.originalStreetId
+
+      console.error('saveStreet door 1c', origStreet.origStreet())
       const namespacedId = await makeNamespacedId()
+      console.error('saveStreet door 1d', origStreet.origStreet())
       street.namespaced_id = namespacedId
 
       // await street.save({ returning: true })
       return Street.create(street)
     }
+    console.error('saveStreet door 2')
 
     const namespacedId = await makeNamespacedId()
     street.namespaced_id = namespacedId
@@ -160,7 +164,7 @@ exports.post = async function (req, res) {
 
   if (req.loginToken) {
     let user
-    console.log('trying to find...', req.loginToken)
+    // console.error('trying to find...', req.loginToken)
     try {
       user = await User.findOne({
         where: { login_tokens: { [Op.contains]: [req.loginToken] } }
@@ -178,6 +182,7 @@ exports.post = async function (req, res) {
       .then(handleCreatedStreet)
       .catch(handleErrors)
   } else {
+    console.error('saving street without login token...')
     saveStreet()
       .then(handleCreatedStreet)
       .catch(handleErrors)
