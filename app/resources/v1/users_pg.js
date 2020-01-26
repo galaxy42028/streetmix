@@ -1,5 +1,5 @@
 const config = require('config')
-const uuid = require('uuid')
+const uuidv1 = require('uuid/v1')
 const Twitter = require('twitter')
 const cloudinary = require('cloudinary')
 const { ERRORS, asUserJson } = require('../../../lib/util')
@@ -21,7 +21,6 @@ exports.post = async function (req, res) {
     const userJson = { id: user.id, loginToken: loginToken }
     logger.info({ user: userJson }, 'New user created.')
     res.header('Location', config.restapi.baseuri + '/v1/users/' + user.id)
-    // res.status(201).send(userJson)
     if (hasPriorCall) {
       res.send(userJson)
     } else {
@@ -49,14 +48,12 @@ exports.post = async function (req, res) {
   } // END function - handleUpdateUser
 
   const handleAuth0TwitterSignIn = async function (credentials) {
-    console.error('handleAuth0TwitterSignIn')
     try {
       let user
       if (credentials.auth0_id) {
         user = await User.findOne({ where: { id: credentials.screenName } })
       }
-      loginToken = uuid.v1()
-      // console.error('hey now', user, loginToken)
+      loginToken = uuidv1()
       if (!user) {
         const newUserData = {
           id: credentials.screenName,
@@ -71,17 +68,22 @@ exports.post = async function (req, res) {
         user.auth0_id = credentials.auth0_id
         user.profile_image_url = credentials.profile_image_url
         if (user.login_tokens) {
-          user.login_tokens.push(loginToken)
+          const newArray = user.login_tokens.concat(loginToken)
+          user.login_tokens = newArray
         } else {
           user.login_tokens = [loginToken]
         }
-        User.update(user, { where: { id: credentials.screenName } })
-          .then(handleUpdateUser)
-          .catch(handleUpdateUserError)
+
+        try {
+          // await User.update(user, { where: { id: credentials.screenName } })
+          await user.save()
+          handleUpdateUser(user)
+        } catch (err) {
+          handleUpdateUserError(err)
+        }
       }
     } catch (err) {
       logger.error(err)
-      console.log(err)
       res.status(500).json({
         status: 500,
         msg: 'Error finding user with Auth Twitter Sign-in.'
@@ -90,13 +92,12 @@ exports.post = async function (req, res) {
   } // END function - handleAuth0TwitterSignIn
 
   const handleTwitterSignIn = async function (credentials) {
-    console.error('handleTwitterSignIn')
     try {
       let user
       if (credentials.auth0_id) {
         user = await User.findOne({ where: { id: credentials.screenName } })
       }
-      loginToken = hasPriorCall ? res.mainData.loginToken : uuid.v1()
+      loginToken = uuidv1()
       if (!user) {
         const newUserData = {
           id: credentials.screenName,
@@ -121,7 +122,6 @@ exports.post = async function (req, res) {
       }
     } catch (err) {
       logger.error(err)
-      console.log(err)
       res.status(500).json({
         status: 500,
         msg: 'Error finding user with twitter screenName.'
@@ -171,14 +171,12 @@ exports.post = async function (req, res) {
   }
 
   const handleAuth0SignIn = async function (credentials) {
-    console.error('handleAuth0SignIn')
     try {
       let user
       if (credentials.auth0_id) {
         user = await User.findOne({ where: { auth0_id: credentials.auth0_id } })
       }
-      // console.log('handleAuth0SignIn', credentials);
-      loginToken = hasPriorCall ? res.mainData.loginToken : uuid.v1()
+      loginToken = uuidv1()
       if (!user) {
         const numOfUser = await User.findOne({
           where: { id: credentials.nickname }
@@ -222,7 +220,6 @@ exports.post = async function (req, res) {
       }
     } catch (err) {
       logger.error(err)
-      console.log(err)
       res
         .status(500)
         .json({ status: 500, msg: 'Error finding user with Auth0 ID.' })
@@ -243,7 +240,6 @@ exports.post = async function (req, res) {
   } else if (Object.prototype.hasOwnProperty.call(body, 'auth0_twitter')) {
     handleAuth0TwitterSignIn(body.auth0_twitter)
   } else if (Object.prototype.hasOwnProperty.call(body, 'auth0')) {
-    console.log({ auth0: body.auth0 }, 'should have auth0 auth0_id?')
     handleAuth0SignIn(body.auth0)
   } else {
     res.status(400).json({ status: 400, msg: 'Unknown sign-in method used.' })
@@ -278,13 +274,8 @@ exports.get = async function (req, res) {
         user.profileImageUrl = user.profile_image_url
       }
 
-      const hasPriorCall = !!(res.mainData && res.mainData.id)
-      if (hasPriorCall) {
-        res.send(asUserJson(data || user))
-      } else {
-        res.status(200).send(asUserJson(data || user))
-      }
-    } // END function - sendUserJson
+      res.status(200).send(asUserJson(data || user))
+    }
 
     let responseAlreadySent = false
 
@@ -396,7 +387,6 @@ exports.get = async function (req, res) {
       .then(handleFindUser)
       .catch(handleError)
   } else {
-    console.log('finding by ID', userId)
     findUserById(userId)
       .then(handleFindUser)
       .catch(handleError)

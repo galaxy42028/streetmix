@@ -8,13 +8,10 @@ const { User, Sequelize, Street, Sequence } = require('../../db/models')
 const Op = Sequelize.Op
 
 exports.post = async function (req, res) {
-  // console.error('STREETS PG POST')
   let body
   const street = {}
 
-  const hasPriorCall = false
-  street.id = hasPriorCall ? res.mainData.id : uuid.v1()
-  // console.error('POSTING NEW STREET', hasPriorCall, street.id, req.body)
+  street.id = uuid.v1()
   const requestIp = function (req) {
     if (req.headers['x-forwarded-for'] !== undefined) {
       return req.headers['x-forwarded-for'].split(', ')[0]
@@ -37,7 +34,6 @@ exports.post = async function (req, res) {
     street.namespaced_id = body.data.namespacedId
     street.client_updated_at = body.clientUpdatedAt
     street.data = body.data
-    // console.error({ data: street.data, bodyKeys: Object.keys(body) })
     street.creator_ip = requestIp(req)
   }
 
@@ -64,8 +60,8 @@ exports.post = async function (req, res) {
     }
   }
 
-  function updateUserLastStreetId (userId) {
-    return User.findByPk(userId).then((user) => {
+  function updateUserLastStreetId (userAltId) {
+    return User.findOne({ where: { _id: userAltId } }).then((user) => {
       return user.increment('last_street_id', { by: 1 })
     })
   }
@@ -91,16 +87,13 @@ exports.post = async function (req, res) {
   }
 
   const makeNamespacedId = async function () {
-    console.error('makeNamespacedId')
     let namespacedId
     try {
       if (street.creator_id) {
         const user = await updateUserLastStreetId(street.creator_id)
         namespacedId = user && user.last_street_id ? user.last_street_id : 1
       } else {
-        console.error('updating sequence...')
         const sequence = await updateSequence()
-        console.error('done updating sequence...', sequence)
         if (isArray(sequence)) {
           namespacedId = sequence[1][0].seq
         } else {
@@ -119,52 +112,41 @@ exports.post = async function (req, res) {
   }
 
   const saveStreet = async function () {
-    console.error('saveStreet')
     if (body && body.originalStreetId) {
-      console.error('saveStreet door 1', body.originalStreetId)
       let origStreet
       try {
-        origStreet = await Street.findByPk(body.originalStreetId)
+        origStreet = await Street.findOne({
+          where: { id: body.originalStreetId }
+        })
       } catch (err) {
         logger.error(err)
         throw new Error(ERRORS.STREET_NOT_FOUND)
       }
-      console.error('saveStreet door 1b', origStreet.origStreet())
 
       if (!origStreet || origStreet.status === 'DELETED') {
         throw new Error(ERRORS.STREET_NOT_FOUND)
       }
-      street.original_street_id = res.mainData.originalStreetId
 
-      console.error('saveStreet door 1c', origStreet.origStreet())
       const namespacedId = await makeNamespacedId()
-      console.error('saveStreet door 1d', origStreet.origStreet())
       street.namespaced_id = namespacedId
 
-      // await street.save({ returning: true })
       return Street.create(street)
     }
-    console.error('saveStreet door 2')
 
     const namespacedId = await makeNamespacedId()
     street.namespaced_id = namespacedId
-    console.error('about to save...', street)
-    // await street.save({ returning: true })
     return Street.create(street)
-    // return street;
   }
 
   const handleCreatedStreet = (s) => {
-    console.error('handleCreatedStreet')
     s = asStreetJson(s)
     logger.info({ street: s }, 'New street created.')
     res.header('Location', config.restapi.baseuri + '/v1/streets/' + s.id)
-    res.status(201).send(s)
+    res.status(201).json(s)
   }
 
   if (req.loginToken) {
     let user
-    // console.error('trying to find...', req.loginToken)
     try {
       user = await User.findOne({
         where: { login_tokens: { [Op.contains]: [req.loginToken] } }
@@ -182,7 +164,6 @@ exports.post = async function (req, res) {
       .then(handleCreatedStreet)
       .catch(handleErrors)
   } else {
-    console.error('saving street without login token...')
     saveStreet()
       .then(handleCreatedStreet)
       .catch(handleErrors)
@@ -308,7 +289,7 @@ exports.get = async function (req, res) {
   street = asStreetJson(street)
   res.set('Access-Control-Allow-Origin', '*')
   res.set('Location', config.restapi.baseuri + '/v1/streets/' + street.id)
-  res.status(200).send(street)
+  res.status(200).json(street)
 } // END function - exports.get
 
 exports.find = async function (req, res) {
@@ -316,11 +297,10 @@ exports.find = async function (req, res) {
   const namespacedId = req.query.namespacedId
   const start = (req.query.start && Number.parseInt(req.query.start, 10)) || 0
   const count = (req.query.count && Number.parseInt(req.query.count, 10)) || 20
-
   const findStreetWithCreatorId = async function (creatorId) {
     let user
     try {
-      user = await User.findByPk(creatorId)
+      user = await User.findOne({ where: { id: creatorId } })
     } catch (err) {
       logger.error(err)
       handleErrors(ERRORS.USER_NOT_FOUND)
@@ -330,7 +310,7 @@ exports.find = async function (req, res) {
       throw new Error(ERRORS.USER_NOT_FOUND)
     }
     return Street.findOne({
-      where: { namespaced_id: namespacedId, creator_id: user._id }
+      where: { namespaced_id: namespacedId, creator_id: user.id }
     })
   } // END function - findStreetWithCreatorId
 
@@ -439,9 +419,12 @@ exports.find = async function (req, res) {
   } // END function - handleFindStreets
 
   if (creatorId) {
-    findStreetWithCreatorId(creatorId)
-      .then(handleFindStreet)
-      .catch(handleErrors)
+    try {
+      const street = await findStreetWithCreatorId(creatorId)
+      handleFindStreet(street)
+    } catch (err) {
+      handleErrors(err)
+    }
   } else if (namespacedId) {
     findStreetWithNamespacedId(namespacedId)
       .then(handleFindStreet)

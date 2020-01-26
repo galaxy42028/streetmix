@@ -1,6 +1,5 @@
-
 const config = require('config')
-const uuid = require('uuid')
+const uuidv1 = require('uuid/v1')
 const cloudinary = require('cloudinary')
 const User = require('../../models/user.js')
 const { ERRORS } = require('../../../lib/util')
@@ -38,11 +37,13 @@ exports.post = function (req, res) {
     const handleFindUser = function (err, user) {
       if (err) {
         logger.error(err)
-        res.status(500).json({ status: 500, msg: 'Error finding user with Auth0 ID.' })
+        res
+          .status(500)
+          .json({ status: 500, msg: 'Error finding user with Auth0 ID.' })
         return
       }
 
-      loginToken = uuid.v1()
+      loginToken = uuidv1()
       if (!user) {
         const u = new User({
           id: credentials.screenName,
@@ -68,10 +69,12 @@ exports.post = function (req, res) {
     const handleFindUser = function (err, user) {
       if (err) {
         logger.error(err)
-        res.status(500).json({ status: 500, msg: 'Error finding user with Twitter ID.' })
+        res
+          .status(500)
+          .json({ status: 500, msg: 'Error finding user with Twitter ID.' })
         return
       }
-      loginToken = uuid.v1()
+      loginToken = uuidv1()
       if (!user) {
         const u = new User({
           id: twitterCredentials.screenName,
@@ -103,7 +106,10 @@ exports.post = function (req, res) {
    *
    * @returns {string}
    */
-  const generateRandomId = () => Math.floor(Math.random() * 10000).toString().padStart(4, '0')
+  const generateRandomId = () =>
+    Math.floor(Math.random() * 10000)
+      .toString()
+      .padStart(4, '0')
 
   const generateId = function (nickname) {
     // TODO - Check if the Id generated is not existing
@@ -121,7 +127,10 @@ exports.post = function (req, res) {
     } else if (credentials.profile_image_url) {
       // If no profile image cached in cloudinary, cache image provided by credentials and return cloudinary url.
       try {
-        const response = await cloudinary.v2.uploader.upload(credentials.profile_image_url, { upload_preset: 'profile_image', public_id: publicId })
+        const response = await cloudinary.v2.uploader.upload(
+          credentials.profile_image_url,
+          { upload_preset: 'profile_image', public_id: publicId }
+        )
         profileImageUrl = response.secure_url
       } catch (error) {
         logger.error(error)
@@ -136,7 +145,7 @@ exports.post = function (req, res) {
   const handleAuth0SignIn = async function (credentials) {
     try {
       const user = await User.findOne({ auth0_id: credentials.auth0_id })
-      loginToken = uuid.v1()
+      loginToken = uuidv1()
       if (!user) {
         const numOfUser = await User.count({ id: credentials.nickname })
         // Ensure there is no existing user with id same this nickname
@@ -172,7 +181,9 @@ exports.post = function (req, res) {
     } catch (err) {
       logger.error(err)
       console.log(err)
-      res.status(500).json({ status: 500, msg: 'Error finding user with Auth0 ID.' })
+      res
+        .status(500)
+        .json({ status: 500, msg: 'Error finding user with Auth0 ID.' })
     }
   } // END function - handleAuth0SignIn
 
@@ -216,7 +227,10 @@ exports.get = function (req, res) {
     }
 
     // If user is not logged in or user is not admin => permission NOT granted
-    if (user.login_tokens.indexOf(req.loginToken) === -1 || !user.roles.includes('ADMIN')) {
+    if (
+      user.login_tokens.indexOf(req.loginToken) === -1 ||
+      !user.roles.includes('ADMIN')
+    ) {
       res.status(401).end()
       return
     }
@@ -248,7 +262,9 @@ exports.get = function (req, res) {
       user.asJson({ auth: true }, function (err, userJson) {
         if (err) {
           logger.error(err)
-          res.status(500).json({ status: 500, msg: 'Could not render user JSON.' })
+          res
+            .status(500)
+            .json({ status: 500, msg: 'Could not render user JSON.' })
           return
         }
 
@@ -257,7 +273,9 @@ exports.get = function (req, res) {
       })
     }
 
-    users.forEach((user) => { getUserJson(user) })
+    users.forEach((user) => {
+      getUserJson(user)
+    })
     res.status(200).send(usersArray)
   }
 
@@ -270,7 +288,9 @@ exports.get = function (req, res) {
         res.status(500).json({ status: 500, msg: 'Error finding user.' })
         return
       case ERRORS.UNAUTHORISED_ACCESS:
-        res.status(401).json({ status: 401, msg: 'User with that login token not found.' })
+        res
+          .status(401)
+          .json({ status: 401, msg: 'User with that login token not found.' })
         return
       default:
         res.status(500).end()

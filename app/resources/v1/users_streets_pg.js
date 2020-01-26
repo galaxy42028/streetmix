@@ -35,20 +35,17 @@ function handleErrors (error, res) {
 
 exports.get = async function (req, res) {
   // Flag error if user ID is not provided
+  console.error('!!! GETTING USER STREETS')
   if (!req.params.user_id) {
     res.status(400).json({ status: 400, msg: 'Please provide user ID.' })
   }
 
   const findUserStreets = async function (userId) {
+    console.error('!!! GETTING USER STREETS - findUserStreets')
     let streets
     try {
       streets = await Street.findAll({
-        include: [
-          {
-            model: User,
-            where: { creator_id: userId }
-          }
-        ],
+        where: { creator_id: userId },
         order: [['updated_at', 'DESC']]
       })
     } catch (err) {
@@ -63,8 +60,12 @@ exports.get = async function (req, res) {
   } // END function - handleFindUserstreets
 
   const handleFindUserStreets = function (streets) {
-    const json = { streets: streets }
-    res.status(200).send(json)
+    console.error('!!!! handleFindUserStreets')
+    const json = { streets }
+    res
+      .status(200)
+      .json(json)
+      .end()
   } // END function - handleFindUserStreets
 
   function handleErrors (error) {
@@ -95,24 +96,32 @@ exports.get = async function (req, res) {
       default:
         res.status(500).end()
     }
+    console.error('!!! GETTING USER STREETS - error', error)
   } // END function - handleErrors
 
   let user
+  console.error('!!! GETTING USER STREETS 1', req.params)
   try {
-    user = await User.findByPk(req.params.user_id)
+    user = await User.findOne({ where: { id: req.params.user_id } })
   } catch (err) {
     logger.error(err)
     handleErrors(ERRORS.CANNOT_GET_STREET)
   }
 
+  console.error('!!! GETTING USER STREETS 2', user)
   if (!user) {
     res.status(404).json({ status: 404, msg: 'Could not find user.' })
     return
   }
-
-  findUserStreets(user._id)
-    .then(handleFindUserStreets)
-    .catch(handleErrors)
+  try {
+    console.error('!!! GETTING USER STREETS 3')
+    const streets = await findUserStreets(user.id)
+    console.error('!!! GETTING USER STREETS 4', streets)
+    handleFindUserStreets(streets)
+  } catch (err) {
+    console.error(err)
+    handleErrors(err)
+  }
 }
 
 exports.delete = async function (req, res) {

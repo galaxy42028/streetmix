@@ -16,23 +16,17 @@ const AccessTokenHandler = function (req, res) {
     try {
       const user = await auth0.getProfile(body.access_token)
       const apiRequestBody = getUserInfo(user)
-      console.error('???', apiRequestBody)
       //  Must be an absolute URI
       const endpoint =
         config.restapi.protocol +
         config.app_host_port +
         config.restapi.baseuri +
         '/v1/users'
+
       axios
         .post(endpoint, apiRequestBody)
         .then((response) => {
           const body = response.data
-          console.error(
-            '!!! setting cookies!!!',
-            body.id,
-            body.loginToken,
-            Object.keys(body)
-          )
 
           // TODO add code to properly resolve user_id
           res.cookie(
@@ -117,8 +111,7 @@ exports.get = function (req, res) {
     .post(url, body, options)
     .then(AccessTokenHandler(req, res))
     .catch((err) => {
-      console.error('Error obtaining access token from Auth0:')
-      console.log(err)
+      logger.error('Error with getting Auth0 token: ' + err)
       res.redirect('/error/no-access-token')
     })
 }

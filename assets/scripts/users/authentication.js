@@ -93,12 +93,10 @@ function removeSignInCookies () {
 }
 
 export async function loadSignIn () {
-  console.error('loadSignIn')
   setSignInLoadedState(false)
 
   var signInCookie = Cookies.get(SIGN_IN_TOKEN_COOKIE)
   var userIdCookie = Cookies.get(USER_ID_COOKIE)
-  console.error('loadSignIn door 1', userIdCookie, signInCookie)
 
   if (signInCookie && userIdCookie) {
     setSignInData({ token: signInCookie, userId: userIdCookie })
@@ -106,10 +104,6 @@ export async function loadSignIn () {
     removeSignInCookies()
     saveSignInDataLocally()
   } else {
-    console.error(
-      'loadSignIn door 2',
-      window.localStorage[LOCAL_STORAGE_SIGN_IN_ID]
-    )
     if (window.localStorage[LOCAL_STORAGE_SIGN_IN_ID]) {
       setSignInData(JSON.parse(window.localStorage[LOCAL_STORAGE_SIGN_IN_ID]))
     }
@@ -146,7 +140,6 @@ export async function loadSignIn () {
  * @returns {Array}
  */
 async function fetchSignInDetails (userId) {
-  console.error('fetchSignInDetails', userId)
   const options = {
     headers: { Authorization: getAuthHeader() }
   }
