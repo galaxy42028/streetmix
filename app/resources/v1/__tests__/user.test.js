@@ -1,9 +1,9 @@
 /* eslint-env jest */
 import request from 'supertest'
 import { setupMockServer } from '../../../../test/helpers/setup-mock-server'
-import user from '../user'
+import user from '../users_pg'
 
-jest.mock('../../../models/user')
+jest.mock('../../../app/db/models/user')
 jest.mock('../../../../lib/logger')
 
 describe('PUT api/v1/users/:user_id', () => {

@@ -3,7 +3,7 @@ import request from 'supertest'
 import { setupMockServer } from '../../../../test/helpers/setup-mock-server'
 import session from '../user_session'
 
-jest.mock('../../../models/user')
+jest.mock('../../../app/db/models/user')
 jest.mock('../../../../lib/logger')
 
 describe('DELETE api/v1/users/:user_id', function () {

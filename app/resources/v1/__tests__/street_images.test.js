@@ -4,8 +4,8 @@ import cloudinary from 'cloudinary'
 import { setupMockServer } from '../../../../test/helpers/setup-mock-server'
 import images from '../street_images'
 
-jest.mock('../../../models/street')
-jest.mock('../../../models/user')
+// jest.mock('../../../db/models/street')
+// jest.mock('../../../db/models/user')
 jest.mock('../../../../lib/logger')
 jest.mock('cloudinary')
 

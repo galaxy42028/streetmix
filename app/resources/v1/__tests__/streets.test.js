@@ -1,10 +1,10 @@
 /* eslint-env jest */
 import request from 'supertest'
 import { setupMockServer } from '../../../../test/helpers/setup-mock-server'
-import streets from '../streets'
+import streets from '../streets_pg'
 
-jest.mock('../../../models/street')
-jest.mock('../../../models/user')
+jest.mock('../../../app/db/models/street')
+jest.mock('../../../app/db/models/user')
 jest.mock('../../../models/sequence')
 jest.mock('../../../../lib/db', () => {})
 jest.mock('../../../../lib/logger')

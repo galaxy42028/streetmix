@@ -3,7 +3,7 @@ import request from 'supertest'
 import { setupMockServer } from '../../../../test/helpers/setup-mock-server'
 import users from '../users'
 
-jest.mock('../../../models/user')
+jest.mock('../../../app/db/models/user')
 jest.mock('../../../../lib/logger')
 
 // Fake user info to test the API

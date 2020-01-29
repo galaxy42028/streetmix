@@ -1,7 +1,7 @@
 const cloudinary = require('cloudinary')
 const config = require('config')
-const User = require('../../models/user.js')
-const Street = require('../../models/street.js')
+const { User, Street } = require('../../db/models')
+
 const logger = require('../../../lib/logger.js')()
 const { SAVE_THUMBNAIL_EVENTS } = require('../../../lib/util.js')
 
@@ -36,7 +36,7 @@ exports.post = async function (req, res) {
   let street
 
   try {
-    street = await Street.findOne({ id: req.params.street_id })
+    street = await Street.findOne({ where: { id: req.params.street_id }})
   } catch (error) {
     logger.error(error)
     res.status(500).json({ status: 500, msg: 'Error finding street.' })
@@ -128,7 +128,7 @@ exports.post = async function (req, res) {
     let user
 
     try {
-      user = await User.findOne({ id: req.userId })
+      user = await User.findOne({ where: { id: req.userId } })
     } catch (error) {
       logger.error(error)
       res.status(500).json({ status: 500, msg: 'Error finding user.' })
@@ -190,7 +190,7 @@ exports.delete = async function (req, res) {
   let user
 
   try {
-    user = await User.findOne({ id: userId })
+    user = await User.findOne({where: { id: userId }})
   } catch (error) {
     logger.error(error)
     res.status(500).json({ status: 500, msg: 'Error finding user.' })
@@ -212,7 +212,7 @@ exports.delete = async function (req, res) {
   let street
 
   try {
-    street = await Street.findOne({ id: req.params.street_id })
+    street = await Street.findOne({ where: { id: req.params.street_id }})
   } catch (error) {
     logger.error(error)
     res.status(500).json({ status: 500, msg: 'Error finding street.' })
