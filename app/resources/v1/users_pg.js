@@ -90,45 +90,6 @@ exports.post = async function (req, res) {
       })
     }
   } // END function - handleAuth0TwitterSignIn
-
-  const handleTwitterSignIn = async function (credentials) {
-    try {
-      let user
-      if (credentials.auth0_id) {
-        user = await User.findOne({ where: { id: credentials.screenName } })
-      }
-      loginToken = uuidv1()
-      if (!user) {
-        const newUserData = {
-          id: credentials.screenName,
-          _id: credentials.auth0_id.split('|')[1],
-          auth0_id: credentials.auth0_id,
-          login_tokens: [loginToken],
-          profile_image_url: credentials.profile_image_url
-        }
-        User.create(newUserData).then(handleCreateUser)
-      } else {
-        user.id = credentials.screenName
-        user.auth0_id = credentials.auth0_id
-        user.profile_image_url = credentials.profile_image_url
-        if (user.login_tokens) {
-          user.login_tokens.push(loginToken)
-        } else {
-          user.login_tokens = [loginToken]
-        }
-        User.update(user, { where: { id: credentials.screenName } })
-          .then(handleUpdateUser)
-          .catch(handleUpdateUserError)
-      }
-    } catch (err) {
-      logger.error(err)
-      res.status(500).json({
-        status: 500,
-        msg: 'Error finding user with twitter screenName.'
-      })
-    }
-  } // END function - handleTwitterSignIn
-
   /**
    * Returns a randomly-generated 4-digit string of a number between 0000 and 9999
    *
@@ -171,6 +132,7 @@ exports.post = async function (req, res) {
   }
 
   const handleAuth0SignIn = async function (credentials) {
+    console.log('handleAuth0SignIn', credentials)
     try {
       let user
       if (credentials.auth0_id) {
@@ -206,7 +168,6 @@ exports.post = async function (req, res) {
         }
       } else {
         const profileImageUrl = await handleUserProfileImage(user, credentials)
-
         user.auth0_id = credentials.auth0_id
         user.profile_image_url = profileImageUrl
         user.email = credentials.email
@@ -214,11 +175,15 @@ exports.post = async function (req, res) {
           user.login_tokens = []
         }
         user.login_tokens.push(loginToken)
-        User.update(user, { where: { id: credentials.screenName } })
-          .then(handleUpdateUser)
-          .catch(handleUpdateUserError)
+        try {
+          await user.save()
+          handleUpdateUser(user)
+        } catch (err) {
+          handleUpdateUserError(err)
+        }
       }
     } catch (err) {
+      console.log('handleAuth0SignIn had error', err)
       logger.error(err)
       res
         .status(500)
@@ -235,9 +200,7 @@ exports.post = async function (req, res) {
   }
 
   logger.info(body)
-  if (Object.prototype.hasOwnProperty.call(body, 'twitter')) {
-    handleTwitterSignIn(body.twitter)
-  } else if (Object.prototype.hasOwnProperty.call(body, 'auth0_twitter')) {
+  if (Object.prototype.hasOwnProperty.call(body, 'auth0_twitter')) {
     handleAuth0TwitterSignIn(body.auth0_twitter)
   } else if (Object.prototype.hasOwnProperty.call(body, 'auth0')) {
     handleAuth0SignIn(body.auth0)
@@ -248,12 +211,9 @@ exports.post = async function (req, res) {
 
 exports.get = async function (req, res) {
   // Flag error if user ID is not provided
-  if (!req.params.user_id) {
-    res.status(400).json({ status: 400, msg: 'Please provide user ID.' })
-    return
-  }
   const userId = req.params.user_id
   const handleFindUser = function (user) {
+    console.log('handleFindUser', user)
     let twitterApiClient
     try {
       twitterApiClient = new Twitter({
@@ -268,12 +228,12 @@ exports.get = async function (req, res) {
     }
 
     const sendUserJson = function (data) {
+      console.log({ data, user })
       if (data) {
         user.profileImageUrl = data.twitter_profile_image_url
       } else {
         user.profileImageUrl = user.profile_image_url
       }
-
       res.status(200).send(asUserJson(data || user))
     }
 
@@ -333,6 +293,7 @@ exports.get = async function (req, res) {
   } // END function - handleFindUser
 
   const handleError = function (error) {
+    console.log('handleError', error)
     switch (error) {
       case ERRORS.USER_NOT_FOUND:
         res.status(404).json({ status: 404, msg: 'User not found.' })
@@ -350,23 +311,6 @@ exports.get = async function (req, res) {
     }
   }
 
-  const findUserByLoginToken = async function (loginToken) {
-    let user
-    try {
-      user = await User.findOne({
-        where: { login_tokens: { [Op.contains]: [loginToken] } }
-      })
-    } catch (err) {
-      logger.error(err)
-      throw new Error(ERRORS.CANNOT_GET_USER)
-    }
-
-    if (!user) {
-      throw new Error(ERRORS.UNAUTHORISED_ACCESS)
-    }
-    return user
-  }
-
   const findUserById = async function (userId) {
     let user
     try {
@@ -376,20 +320,45 @@ exports.get = async function (req, res) {
       throw new Error(ERRORS.CANNOT_GET_USER)
     }
 
+    // if enabled, returns 401 for any attempt to get another user's data
+    // if (user.login_tokens.indexOf(req.loginToken) === -1) {
+    //   res.status(401).end()
+    //   return
+    // }
     if (!user) {
       throw new Error(ERRORS.USER_NOT_FOUND)
     }
+
     return user
   }
 
-  if (req.loginToken) {
-    findUserByLoginToken(req.loginToken)
-      .then(handleFindUser)
-      .catch(handleError)
-  } else {
-    findUserById(userId)
-      .then(handleFindUser)
-      .catch(handleError)
+  if (!userId) {
+    console.log('no user ID')
+    const callingUser = await User.findOne({
+      where: { login_tokens: { [Op.contains]: [req.loginToken] } }
+    })
+
+    const isAdmin =
+      callingUser &&
+      callingUser.login_tokens &&
+      callingUser.login_tokens.indexOf &&
+      callingUser.login_tokens.indexOf(req.loginToken) !== -1
+
+    if (isAdmin) {
+      const userList = await User.findAll({ raw: true })
+      res.status(200).send(asUserJson(userList))
+      return
+    }
+
+    res.status(401).json({ status: 401, msg: 'Please provide user ID.' })
+    return
+  }
+
+  try {
+    const result = await findUserById(userId)
+    handleFindUser(result)
+  } catch (err) {
+    handleError(err)
   }
 } // END function - exports.get
 
@@ -437,7 +406,7 @@ exports.put = async function (req, res) {
   let user
 
   try {
-    user = await User.findByPk(userId)
+    user = await User.find({ where: { id: userId } })
   } catch (err) {
     logger.error(err)
     res.status(500).json({ status: 500, msg: 'Error finding user.' })
@@ -448,7 +417,22 @@ exports.put = async function (req, res) {
     return
   }
 
-  if (user.login_tokens.indexOf(req.loginToken) === -1) {
+  const callingUser = await User.findOne({
+    where: { login_tokens: { [Op.contains]: [req.loginToken] } }
+  })
+
+  const isAdmin =
+    callingUser &&
+    callingUser.login_tokens &&
+    callingUser.login_tokens.indexOf &&
+    callingUser.login_tokens.indexOf(req.loginToken) !== -1
+
+  if (!isAdmin && user.login_tokens.indexOf(req.loginToken) === -1) {
+    console.log('UGH WE SHOULD BE RETURNING ADMIN TRUE', {
+      tokens: callingUser.login_tokens,
+      isAdmin,
+      c: callingUser.toJSON()
+    })
     res.status(401).end()
     return
   }
