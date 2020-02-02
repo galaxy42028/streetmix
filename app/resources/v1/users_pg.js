@@ -132,7 +132,6 @@ exports.post = async function (req, res) {
   }
 
   const handleAuth0SignIn = async function (credentials) {
-    console.log('handleAuth0SignIn', credentials)
     try {
       let user
       if (credentials.auth0_id) {
@@ -183,7 +182,6 @@ exports.post = async function (req, res) {
         }
       }
     } catch (err) {
-      console.log('handleAuth0SignIn had error', err)
       logger.error(err)
       res
         .status(500)
@@ -213,7 +211,6 @@ exports.get = async function (req, res) {
   // Flag error if user ID is not provided
   const userId = req.params.user_id
   const handleFindUser = function (user) {
-    console.log('handleFindUser', user)
     let twitterApiClient
     try {
       twitterApiClient = new Twitter({
@@ -228,7 +225,6 @@ exports.get = async function (req, res) {
     }
 
     const sendUserJson = function (data) {
-      console.log({ data, user })
       if (data) {
         user.profileImageUrl = data.twitter_profile_image_url
       } else {
@@ -287,13 +283,11 @@ exports.get = async function (req, res) {
         }
       }, config.twitter.timeout_ms)
     } else {
-      console.log('about to send user JSON!')
       sendUserJson()
     }
   } // END function - handleFindUser
 
   const handleError = function (error) {
-    console.log('handleError', error)
     switch (error) {
       case ERRORS.USER_NOT_FOUND:
         res.status(404).json({ status: 404, msg: 'User not found.' })
@@ -333,7 +327,6 @@ exports.get = async function (req, res) {
   }
 
   if (!userId) {
-    console.log('no user ID')
     const callingUser = await User.findOne({
       where: { login_tokens: { [Op.contains]: [req.loginToken] } }
     })
@@ -439,11 +432,6 @@ exports.put = async function (req, res) {
     callingUser.login_tokens.indexOf(req.loginToken) !== -1
 
   if (!isAdmin && user.login_tokens.indexOf(req.loginToken) === -1) {
-    console.log('UGH WE SHOULD BE RETURNING ADMIN TRUE', {
-      tokens: callingUser.login_tokens,
-      isAdmin,
-      c: callingUser.toJSON()
-    })
     res.status(401).end()
     return
   }

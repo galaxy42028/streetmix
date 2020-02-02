@@ -1,7 +1,8 @@
 const config = require('config')
 const uuidv1 = require('uuid/v1')
 const cloudinary = require('cloudinary')
-const User = require('../../models/user.js')
+const { User } = require('../../db/models')
+// const User = require('../../db/models/user.js')
 const { ERRORS } = require('../../../lib/util')
 const logger = require('../../../lib/logger.js')()
 

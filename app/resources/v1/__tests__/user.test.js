@@ -56,7 +56,6 @@ jest.mock('../../../db/models', () => {
       return UserMock.build(ADMIN_DEFAULTS)
     }
 
-    console.log('returning user')
     return UserMock.build(USER_DEFAULTS)
   })
 
