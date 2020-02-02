@@ -8,7 +8,6 @@ const { User, Sequelize, Street, Sequence } = require('../../db/models')
 const Op = Sequelize.Op
 
 exports.post = async function (req, res) {
-  console.log('posting')
   let body
   const street = {}
 
@@ -127,10 +126,8 @@ exports.post = async function (req, res) {
       if (!origStreet || origStreet.status === 'DELETED') {
         throw new Error(ERRORS.STREET_NOT_FOUND)
       }
-      console.log('door  s1')
       const namespacedId = await makeNamespacedId()
       street.namespaced_id = namespacedId
-      console.log('door  s2', street)
 
       return Street.create(street)
     }
@@ -141,7 +138,6 @@ exports.post = async function (req, res) {
   }
 
   const handleCreatedStreet = (s) => {
-    console.log('handleCreatedStreet')
     s = asStreetJson(s)
     logger.info({ street: s }, 'New street created.')
     res.header('Location', config.restapi.baseuri + '/v1/streets/' + s.id)
@@ -196,7 +192,6 @@ exports.delete = async function (req, res) {
     }
 
     if (!user) {
-      console.log('deleteStreet catch - 2')
       throw new Error(ERRORS.UNAUTHORISED_ACCESS)
     }
 
@@ -216,7 +211,6 @@ exports.delete = async function (req, res) {
   }
 
   function handleErrors (error) {
-    console.log('handleErrors', error)
     switch (error) {
       case ERRORS.USER_NOT_FOUND:
         res.status(404).json({ status: 404, msg: 'User not found.' })
@@ -254,7 +248,6 @@ exports.delete = async function (req, res) {
 
   deleteStreet(street)
     .then((street) => {
-      console.log('got here')
       res.status(204).end()
     })
     .catch(handleErrors)
@@ -467,7 +460,6 @@ exports.put = async function (req, res) {
   }
 
   function handleErrors (error) {
-    console.log('handleErrors', error)
     switch (error) {
       case ERRORS.USER_NOT_FOUND:
         res.status(404).json({ status: 404, msg: 'Creator not found.' })

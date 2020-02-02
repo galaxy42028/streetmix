@@ -35,13 +35,11 @@ function handleErrors (error, res) {
 
 exports.get = async function (req, res) {
   // Flag error if user ID is not provided
-  console.error('!!! GETTING USER STREETS')
   if (!req.params.user_id) {
     res.status(400).json({ status: 400, msg: 'Please provide user ID.' })
   }
 
   const findUserStreets = async function (userId) {
-    console.error('!!! GETTING USER STREETS - findUserStreets')
     let streets
     try {
       streets = await Street.findAll({
@@ -60,7 +58,6 @@ exports.get = async function (req, res) {
   } // END function - handleFindUserstreets
 
   const handleFindUserStreets = function (streets) {
-    console.error('!!!! handleFindUserStreets')
     const json = { streets }
     res
       .status(200)
@@ -96,11 +93,9 @@ exports.get = async function (req, res) {
       default:
         res.status(500).end()
     }
-    console.error('!!! GETTING USER STREETS - error', error)
   } // END function - handleErrors
 
   let user
-  console.error('!!! GETTING USER STREETS 1', req.params)
   try {
     user = await User.findOne({ where: { id: req.params.user_id } })
   } catch (err) {
@@ -108,15 +103,12 @@ exports.get = async function (req, res) {
     handleErrors(ERRORS.CANNOT_GET_STREET)
   }
 
-  console.error('!!! GETTING USER STREETS 2', user)
   if (!user) {
     res.status(404).json({ status: 404, msg: 'Could not find user.' })
     return
   }
   try {
-    console.error('!!! GETTING USER STREETS 3')
     const streets = await findUserStreets(user.id)
-    console.error('!!! GETTING USER STREETS 4', streets)
     handleFindUserStreets(streets)
   } catch (err) {
     console.error(err)
