@@ -23,7 +23,7 @@ jest.mock('../../../db/models', () => {
     profile_image_url: 'http://example.com/example.gif',
     email: 'email@example.com',
     login_tokens: [ADMIN_TOKEN],
-    id: 'user1',
+    id: 'admin1',
     roles: ['ADMIN']
   }
 
@@ -33,15 +33,18 @@ jest.mock('../../../db/models', () => {
     login_tokens: [DEFAULT_TOKEN],
     roles: []
   }
+  const ALT_USER_DEFAULTS = {
+    id: 'user2'
+  }
   const CONTAINS_KEY = 'CONTAINS_KEY'
   UserMock.$queryInterface.$useHandler(function (query, queryOptions, done) {
     if (
       queryOptions[0] &&
       queryOptions[0].where &&
       queryOptions[0].where.id &&
-      queryOptions[0].where.id === 'user1'
+      queryOptions[0].where.id === 'user2'
     ) {
-      return UserMock.build(USER_DEFAULTS)
+      return UserMock.build(ALT_USER_DEFAULTS)
     } else if (
       queryOptions[0] &&
       queryOptions[0].where &&
@@ -114,7 +117,7 @@ describe('GET api/v1/users/:user_id', function () {
     app.get('/api/v1/users/:user_id', user.get)
   })
 
-  it.only('should respond with 200 when a user is found', () => {
+  it('should respond with 200 when a user is found', () => {
     return request(app)
       .get('/api/v1/users/user1')
       .then((response) => {
@@ -145,7 +148,7 @@ describe('DELETE api/v1/users/:user_id', () => {
       .delete('/api/v1/users/user2')
       .set(
         'Authorization',
-        'Streetmix realm="" loginToken="xxxxxxxx-xxxx-xxxx-xxxx-1111111111111" userId="user1"'
+        'Streetmix realm="" loginToken="xxxxxxxx-xxxx-xxxx-xxxx-2222222222222" userId="user2"'
       )
       .then((response) => {
         expect(response.statusCode).toEqual(401)

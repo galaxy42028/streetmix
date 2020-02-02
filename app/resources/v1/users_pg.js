@@ -366,19 +366,30 @@ exports.delete = async function (req, res) {
   const userId = req.params.user_id
   let user
   try {
-    user = await User.findByPk(userId)
+    user = await User.findOne({ where: { id: userId } })
   } catch (err) {
     logger.error(err)
     res.status(500).json({ status: 500, msg: 'Error finding user.' })
   }
 
   if (!user) {
-    res.status(404).json({ status: 404, msg: 'User not fouloginTokennd.' })
+    res.status(404).json({ status: 404, msg: 'User not found.' })
     return
   }
 
   const idx = user.login_tokens.indexOf(req.loginToken)
-  if (idx === -1) {
+
+  const callingUser = await User.findOne({
+    where: { login_tokens: { [Op.contains]: [req.loginToken] } }
+  })
+
+  const isAdmin =
+    callingUser &&
+    callingUser.login_tokens &&
+    callingUser.login_tokens.indexOf &&
+    callingUser.login_tokens.indexOf(req.loginToken) !== -1
+
+  if (idx === -1 && !isAdmin) {
     res.status(401).end()
     return
   }
